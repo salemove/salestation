@@ -3,18 +3,6 @@ require_relative './web/error_mapper'
 
 module Salestation
   module Web
-    ERROR_MAPPER = {
-      App::Errors::InvalidInput => -> (error) {
-        Responses::UnprocessableEntityFromSchemaErrors.create(error)
-      },
-      App::Errors::DependencyCurrentlyUnavailable => -> (error) {
-        Responses::ServiceUnavailable.new(
-          message: error.message,
-          debug_message: "Please try again later"
-        )
-      }
-    }.freeze
-
     def process(response)
       result = response.map_err(&ErrorMapper.map).value
 
