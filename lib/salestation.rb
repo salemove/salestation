@@ -1,0 +1,3 @@
+module Salestation
+  # Your code goes here...
+end
