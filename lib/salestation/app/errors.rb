@@ -1,21 +1,17 @@
 module Salestation
   module App
     module Errors
-      class InvalidInput
-        include Virtus.value_object(strict: true)
+      class InvalidInput < Dry::Struct
+        constructor_type :strict_with_defaults
 
-        values do
-          attribute :errors, Hash
-          attribute :hints, Hash
-        end
+        attribute :errors, Types::Strict::Hash
+        attribute :hints, Types::Coercible::Hash.default({})
       end
 
-      class DependencyCurrentlyUnavailable
-        include Virtus.value_object(strict: true)
+      class DependencyCurrentlyUnavailable < Dry::Struct
+        constructor_type :strict
 
-        values do
-          attribute :message, String
-        end
+        attribute :message, Types::Strict::String
       end
     end
   end

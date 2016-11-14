@@ -1,8 +1,13 @@
-require_relative './web/responses'
-require_relative './web/error_mapper'
+require 'deterministic'
+require 'dry-struct'
+require 'dry-types'
 
 module Salestation
   module Web
+    module Types
+      include Dry::Types.module
+    end
+
     def process(response)
       result = response.map_err(&ErrorMapper.map).value
 
@@ -15,3 +20,6 @@ module Salestation
     end
   end
 end
+
+require_relative './web/responses'
+require_relative './web/error_mapper'

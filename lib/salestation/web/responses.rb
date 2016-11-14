@@ -19,30 +19,26 @@ module Salestation
         end
       end
 
-      class Error
+      class Error < Dry::Struct
         extend Response
-        include Virtus.value_object(strict: true)
+        constructor_type :strict_with_defaults
 
-        values do
-          attribute :status, Integer
-          attribute :message, String
-          attribute :debug_message, String, default: ''
-          attribute :context, Hash, default: {}
-        end
+        attribute :status, Types::Strict::Int
+        attribute :message, Types::Strict::String
+        attribute :debug_message, Types::String.default('')
+        attribute :context, Types::Hash.default({})
 
         def body
           {message: message}
         end
       end
 
-      class Success
+      class Success < Dry::Struct
         extend Response
-        include Virtus.value_object(strict: true)
+        constructor_type :strict
 
-        values do
-          attribute :status, Integer
-          attribute :body, Hash
-        end
+        attribute :status, Types::Strict::Int
+        attribute :body, Types::Strict::String
       end
 
       class UnprocessableEntityFromSchemaErrors
