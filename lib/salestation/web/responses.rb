@@ -38,7 +38,7 @@ module Salestation
         constructor_type :strict
 
         attribute :status, Types::Strict::Int
-        attribute :body, Types::Strict::String
+        attribute :body, Types::Strict::Hash
       end
 
       class UnprocessableEntityFromSchemaErrors

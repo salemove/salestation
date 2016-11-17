@@ -5,7 +5,7 @@ describe Salestation::Web::Responses::Success do
 
   let(:attributes) { {status: status, body: body} }
   let(:status) { 200 }
-  let(:body) { 'body' }
+  let(:body) { {key: 'value'} }
 
   it 'has status' do
     expect(create_success.status).to eq(status)
