@@ -44,4 +44,4 @@ end
 require_relative './app/errors'
 require_relative './app/request'
 require_relative './app/input_verification'
-require_relative './app/result_helper'
+require_relative './result_helper'
