@@ -1,5 +1,5 @@
 module Salestation
-  module App
+  class App
     module ResultHelper
       def observe(&block)
         -> (result_value) do

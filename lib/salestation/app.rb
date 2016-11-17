@@ -3,9 +3,40 @@ require 'dry-struct'
 require 'dry-types'
 
 module Salestation
-  module App
+  class App
     module Types
       include Dry::Types.module
+    end
+
+    def initialize(env:, hooks: {})
+      @environment = env
+      @hook_listeners = {}
+      @hooks = hooks
+    end
+
+    def start
+      @hooks.each do |hook_type, hook|
+        hook.start_listening do |payload|
+          @hook_listeners.fetch(hook_type, []).each { |handle| handle.call(payload) }
+        end
+      end
+    end
+
+    def create_request(input)
+      Request.create(env: @environment, input: input, initialize_hook: method(:initialize_hook))
+    end
+
+    def register_listener(hook_type, listener)
+      @hook_listeners[hook_type] ||= []
+      @hook_listeners[hook_type].push(listener)
+    end
+
+    private
+
+    def initialize_hook(hook_type, payload)
+      raise "Unknown hook_type #{hook_type}" unless @hooks[hook_type]
+
+      @hooks[hook_type].init(payload)
     end
   end
 end

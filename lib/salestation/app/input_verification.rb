@@ -1,5 +1,5 @@
 module Salestation
-  module App
+  class App
     module InputVerification
       def verify_input(schema)
         -> (request) do
