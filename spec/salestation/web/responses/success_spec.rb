@@ -14,4 +14,11 @@ describe Salestation::Web::Responses::Success do
   it 'has body' do
     expect(create_success.body).to eq(body)
   end
+
+  describe '.with_code' do
+    it 'creates success with provided code' do
+      expect(described_class.with_code(201).new(attributes).status)
+        .to eq(201)
+    end
+  end
 end

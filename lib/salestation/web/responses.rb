@@ -12,7 +12,7 @@ module Salestation
       module Response
         def with_code(code)
           Class.new(self) do
-            define_method :initialize do |attrs|
+            define_singleton_method :new do |attrs|
               super(attrs.merge(status: code))
             end
           end

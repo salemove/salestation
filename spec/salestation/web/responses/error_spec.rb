@@ -46,4 +46,11 @@ describe Salestation::Web::Responses::Error do
       expect(create_error.context).to eq({})
     end
   end
+
+  describe '.with_code' do
+    it 'creates error with provided code' do
+      expect(described_class.with_code(500).new(attributes).status)
+        .to eq(500)
+    end
+  end
 end
