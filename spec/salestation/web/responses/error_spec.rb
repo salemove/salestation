@@ -31,6 +31,10 @@ describe Salestation::Web::Responses::Error do
     expect(create_error.context).to eq(context)
   end
 
+  it 'has message and debug_message in body' do
+    expect(create_error.body).to eql(message: message, debug_message: debug_message)
+  end
+
   context 'when debug message is missing' do
     let(:attributes) { all_attributes.except(:debug_message) }
 

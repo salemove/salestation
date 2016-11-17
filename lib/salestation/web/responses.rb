@@ -29,7 +29,7 @@ module Salestation
         attribute :context, Types::Hash.default({})
 
         def body
-          {message: message}
+          {message: message, debug_message: debug_message}
         end
       end
 
