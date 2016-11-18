@@ -1,5 +1,5 @@
 module Salestation
-  module App
+  class App
     module Errors
       class InvalidInput < Dry::Struct
         constructor_type :strict_with_defaults

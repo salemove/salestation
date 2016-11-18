@@ -12,7 +12,7 @@ module Salestation
       module Response
         def with_code(code)
           Class.new(self) do
-            define_method :initialize do |attrs|
+            define_singleton_method :new do |attrs|
               super(attrs.merge(status: code))
             end
           end
@@ -29,7 +29,7 @@ module Salestation
         attribute :context, Types::Hash.default({})
 
         def body
-          {message: message}
+          {message: message, debug_message: debug_message}
         end
       end
 
@@ -38,7 +38,7 @@ module Salestation
         constructor_type :strict
 
         attribute :status, Types::Strict::Int
-        attribute :body, Types::Strict::String
+        attribute :body, Types::Strict::Hash
       end
 
       class UnprocessableEntityFromSchemaErrors

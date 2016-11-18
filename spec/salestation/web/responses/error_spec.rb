@@ -31,6 +31,10 @@ describe Salestation::Web::Responses::Error do
     expect(create_error.context).to eq(context)
   end
 
+  it 'has message and debug_message in body' do
+    expect(create_error.body).to eql(message: message, debug_message: debug_message)
+  end
+
   context 'when debug message is missing' do
     let(:attributes) { all_attributes.except(:debug_message) }
 
@@ -44,6 +48,13 @@ describe Salestation::Web::Responses::Error do
 
     it 'defaults to empty hash' do
       expect(create_error.context).to eq({})
+    end
+  end
+
+  describe '.with_code' do
+    it 'creates error with provided code' do
+      expect(described_class.with_code(500).new(attributes).status)
+        .to eq(500)
     end
   end
 end
