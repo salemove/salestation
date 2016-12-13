@@ -13,6 +13,8 @@ module Salestation
 
         attribute :message, Types::Strict::String
       end
+
+      class RequestedResourceNotFound; end
     end
   end
 end
