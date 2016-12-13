@@ -9,6 +9,10 @@ module Salestation
         -> (object) { Deterministic::Result::Success(Responses::Accepted.new(body: object)) }
       end
 
+      def self.to_ok
+        -> (object) { Deterministic::Result::Success(Responses::OK.new(body: object)) }
+      end
+
       module Response
         def with_code(code)
           Class.new(self) do
@@ -56,6 +60,7 @@ module Salestation
         end
       end
 
+      OK = Success.with_code(200)
       Created = Success.with_code(201)
       Accepted = Success.with_code(202)
 
