@@ -66,6 +66,7 @@ module Salestation
 
       Unauthorized = Error.with_code(401)
       UnprocessableEntity = Error.with_code(422)
+      NotFound = Error.with_code(404)
 
       InternalError = Error.with_code(500)
       ServiceUnavailable = Error.with_code(503)

@@ -10,6 +10,9 @@ module Salestation
             message: error.message,
             debug_message: "Please try again later"
           )
+        },
+        App::Errors::RequestedResourceNotFound => -> (error) {
+          Responses::NotFound.new(message: "Resource not found")
         }
       }.freeze
 
