@@ -14,7 +14,9 @@ module Salestation
         attribute :message, Types::Strict::String
       end
 
-      class RequestedResourceNotFound; end
+      class RequestedResourceNotFound < Dry::Struct
+        constructor_type :strict
+      end
     end
   end
 end
