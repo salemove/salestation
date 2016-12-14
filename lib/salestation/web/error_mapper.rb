@@ -13,6 +13,9 @@ module Salestation
         },
         App::Errors::RequestedResourceNotFound => -> (error) {
           Responses::NotFound.new(message: "Resource not found")
+        },
+        App::Errors::Forbidden => -> (error) {
+          Responses::Forbidden.new(message: error.message)
         }
       }.freeze
 
