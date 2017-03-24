@@ -1,9 +1,5 @@
 # Salestation
 
-Welcome to your new gem! In this directory, you'll find the files you need to be able to package up your Ruby library into a gem. Put your Ruby code in the file `lib/salestation`. To experiment with that code, run `bin/console` for an interactive prompt.
-
-TODO: Delete this and the text above, and describe your gem
-
 ## Installation
 
 Add this line to your application's Gemfile:
@@ -16,13 +12,66 @@ And then execute:
 
     $ bundle
 
-Or install it yourself as:
-
-    $ gem install salestation
-
 ## Usage
 
-TODO: Write usage instructions here
+### Using Salestation with Sinatra
+
+First include `Salestation::Web`. This will provide a method called `process` to execute a request and Responses module for return codes.
+```ruby
+class Webapp < Sinatra::Base
+  include Salestation::Web.new
+end
+```
+
+Create Salestation application:
+```ruby
+  def app
+    @_app ||= Salestation::App.new(env: ENVIRONMENT)
+  end
+```
+
+Define a route
+```ruby
+post '/hello/:name' do
+  process(
+    HelloUser.call(app.create_request(
+      name: params['name']
+    )).map(Responses.to_ok)
+  )
+end
+```
+
+Define chain
+```ruby
+class HelloUser
+  def self.call(request)
+    request >> upcase >> format
+  end
+
+  def self.upcase
+    -> (request) do
+      input.with_input(name: input.fetch(:name).upcase)
+    end
+  end
+
+  def self.format
+    -> (request) do
+      name = request.input.fetch(:name)
+      Deterministic::Result::Success(message: "Hello #{name}")
+    end
+  end
+end
+```
+
+### Using custom errors in error mapper
+
+Salestation allows and recommends you to define your own custom errors. This is useful when your app has error classes that are not general enough for the salestation library.
+
+```ruby
+  include Salestation::Web.new(errors: {
+    CustomError => -> (error) { CustomResponse.new(error) }
+  })
+```
 
 ## Development
 
