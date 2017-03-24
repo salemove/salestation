@@ -63,11 +63,12 @@ module Salestation
       OK = Success.with_code(200)
       Created = Success.with_code(201)
       Accepted = Success.with_code(202)
+      NoContent = Success.with_code(204)
 
       Unauthorized = Error.with_code(401)
-      UnprocessableEntity = Error.with_code(422)
       Forbidden = Error.with_code(403)
       NotFound = Error.with_code(404)
+      UnprocessableEntity = Error.with_code(422)
 
       InternalError = Error.with_code(500)
       ServiceUnavailable = Error.with_code(503)
