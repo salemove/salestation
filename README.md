@@ -73,6 +73,32 @@ Salestation allows and recommends you to define your own custom errors. This is 
   })
 ```
 
+### Using a logger
+
+Salestation provides a rack logging middleware which can be used to log structured objects.
+
+```ruby
+class Webapp < Sinatra::Base
+  # ...
+  use Salestation::Web::RequestLogger, my_logger
+end
+```
+
+### Using StatsD
+
+Salestation provides a StatsD middleware which can be used record request
+execution time. A `timing` call with elapsed seconds is made to the provided
+StatsD instance with `path`, `method`, `status` tags.
+
+```ruby
+class Webapp < Sinatra::Base
+  # ...
+  use Salestation::Web::StatsdMiddleware,
+    Statsd.new(host, port),
+    metric: 'my-metric'
+end
+```
+
 ## Development
 
 After checking out the repo, run `bin/setup` to install dependencies. Then, run `rake spec` to run the tests. You can also run `bin/console` for an interactive prompt that will allow you to experiment.
