@@ -59,9 +59,7 @@ module Salestation
           method: env[REQUEST_METHOD],
           status: status,
           duration: Time.now - began_at,
-          headers: headers.slice(
-            'Location', 'Content-Length', 'Content-Type'
-          )
+          headers: headers
         }.merge(response_payload)
       end
 
