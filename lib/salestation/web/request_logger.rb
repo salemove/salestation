@@ -26,7 +26,7 @@ module Salestation
 
         request_logger.info('Received request', request_log(env))
         @app.call(env).tap do |status, headers, body|
-          type = status >= 500 ? :info : :error
+          type = status >= 500 ? :error : :info
           request_logger.public_send(type, 'Processed request', response_log(env, status, headers, body, began_at))
         end
       end
