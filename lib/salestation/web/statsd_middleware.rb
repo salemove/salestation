@@ -13,7 +13,13 @@ module Salestation
 
         status, header, body = @app.call env
 
-        method, path = env['sinatra.route'].split
+        method = env['REQUEST_METHOD']
+        path =
+          if route = env['sinatra.route']
+            route.split(' ').last
+          else
+            'unknown-route'
+          end
 
         @statsd.timing(@metric, (Time.now - start) * 1000, tags: [
           "path:#{ path }",
