@@ -4,9 +4,9 @@ $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
 
 Gem::Specification.new do |spec|
   spec.name          = "salestation"
-  spec.version       = "0.0.6"
-  spec.authors       = ["SaleMove Developers"]
-  spec.email         = ["support@salemove.com"]
+  spec.version       = "0.1.0"
+  spec.authors       = ["SaleMove TechMovers"]
+  spec.email         = ["techmovers@salemove.com"]
 
   spec.summary       = %q{}
   spec.description   = %q{}

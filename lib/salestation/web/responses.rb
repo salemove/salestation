@@ -1,5 +1,5 @@
 module Salestation
-  module Web
+  class Web < Module
     module Responses
       def self.to_created
         -> (object) { Deterministic::Result::Success(Responses::Created.new(body: object)) }
