@@ -47,16 +47,41 @@ module Salestation
 
       class UnprocessableEntityFromSchemaErrors
         def self.create(errors:, hints:)
-          message = errors
-            .map { |field, error_messages| "'#{field}' #{error_messages.join(' and ')}" }
-            .join(". ")
-
-          debug_message = hints
-            .select {|field, hint_messages| hint_messages.any? }
-            .map { |field, hint_messages| "'#{field}' #{hint_messages.join(' and ')}" }
-            .join(". ")
+          message = parse_errors(errors)
+          debug_message = parse_hints(hints)
 
           UnprocessableEntity.new(message: message, debug_message: debug_message)
+        end
+
+        def self.parse_errors(errors)
+          parsed_errors = errors.map do |field, error_messages|
+            if error_messages.is_a?(Hash)
+              errors_with_nested_keys = error_messages.keys.map do |key|
+                { "#{field}.#{key}" => error_messages[key] }
+              end
+
+              parse_errors(errors_with_nested_keys.reduce(Hash.new, :merge))
+            else
+              "'#{field}' #{error_messages.join(' and ')}"
+            end
+          end
+          parsed_errors.join(". ")
+        end
+
+        def self.parse_hints(hints)
+          parsed_hints = hints.select { |field, hint_messages| hint_messages.any? }
+            .map do |field, hint_messages|
+              if hint_messages.is_a?(Hash)
+                hints_with_nested_keys = hint_messages.keys.map do |key|
+                  { "#{field}.#{key}" => hint_messages[key] }
+                end
+
+                parse_hints(hints_with_nested_keys.reduce(Hash.new, :merge))
+              else
+                "'#{field}' #{hint_messages.join(' and ')}"
+              end
+            end
+          parsed_hints.join(". ")
         end
       end
 
