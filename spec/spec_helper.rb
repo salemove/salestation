@@ -1,5 +1,6 @@
 $LOAD_PATH.unshift File.expand_path("../../lib", __FILE__)
 require "salestation"
+require 'pry'
 require_relative './salestation/support/hook_mock'
 
 class Hash
