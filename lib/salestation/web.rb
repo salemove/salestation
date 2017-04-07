@@ -23,7 +23,7 @@ module Salestation
           result = response.map_err(error_mapper.map).value
 
           status result.status
-          json JSON.dump(result.body)
+          json result.body
         end
       end
     end
