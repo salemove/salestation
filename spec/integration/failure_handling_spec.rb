@@ -16,6 +16,10 @@ describe 'Failure handling' do
         CustomErrorClass => -> (error) { CustomErrorResponse }
       })
 
+      def json(input)
+        input.to_json
+      end
+
       def run
         app = Salestation::App.new(env: {})
         to_error = -> (request) { request.to_failure(CustomErrorClass.new) }
@@ -24,10 +28,6 @@ describe 'Failure handling' do
       end
 
       def status(*)
-      end
-
-      def json(input)
-        input
       end
     end
 

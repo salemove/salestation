@@ -1,5 +1,7 @@
 # Salestation
 
+[![Build Status](https://travis-ci.org/salemove/salestation.svg?branch=master)](https://travis-ci.org/salemove/salestation)
+
 ## Installation
 
 Add this line to your application's Gemfile:
