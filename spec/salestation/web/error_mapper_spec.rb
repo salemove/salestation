@@ -12,7 +12,7 @@ describe Salestation::Web::ErrorMapper do
     end
 
     it 'returns custom error' do
-      response = Salestation::App::Request.new(env: {}, input: {}, initialize_hook: nil)
+      response = Salestation::App::Request.new(env: {}, input: {})
         .to_failure(custom_error_class.new)
         .map_err(&error_mapper.map)
         .value
@@ -26,7 +26,7 @@ describe Salestation::Web::ErrorMapper do
     let(:message) { 'no access' }
 
     it 'returns Responses::Forbidden' do
-      response = Salestation::App::Request.new(env: {}, input: {}, initialize_hook: nil)
+      response = Salestation::App::Request.new(env: {}, input: {})
         .to_failure(Salestation::App::Errors::Forbidden.new(message: message))
         .map_err(&error_mapper.map)
         .value
@@ -40,7 +40,7 @@ describe Salestation::Web::ErrorMapper do
 
     it 'throws UndefinedErrorClass exception' do
       expect {
-        Salestation::App::Request.new(env: {}, input: {}, initialize_hook: nil)
+        Salestation::App::Request.new(env: {}, input: {})
           .to_failure(StandardError.new)
           .map_err(&error_mapper.map)
       }.to raise_error(described_class::UndefinedErrorClass)
