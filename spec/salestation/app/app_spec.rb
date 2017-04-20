@@ -39,4 +39,23 @@ describe Salestation::App do
       end
     end
   end
+
+  describe '#create_request' do
+    context 'when span is given' do
+      it 'can be accessed' do
+        input = {}
+        span = double('span')
+        request = app.create_request(input, span: span).value
+        expect(request.span).to eq(span)
+      end
+    end
+
+    context 'when span is missing' do
+      it 'defaults to nil' do
+        input = {}
+        request = app.create_request(input).value
+        expect(request.span).to be_nil
+      end
+    end
+  end
 end

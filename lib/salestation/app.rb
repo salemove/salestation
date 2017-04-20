@@ -22,8 +22,13 @@ module Salestation
       end
     end
 
-    def create_request(input)
-      Request.create(env: @environment, input: input, initialize_hook: method(:initialize_hook))
+    def create_request(input, span: nil)
+      Request.create(
+        env: @environment,
+        input: input,
+        initialize_hook: method(:initialize_hook),
+        span: span
+      )
     end
 
     def register_listener(hook_type, listener)
