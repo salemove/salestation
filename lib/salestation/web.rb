@@ -33,5 +33,6 @@ end
 require_relative './web/responses'
 require_relative './web/error_mapper'
 require_relative './result_helper'
+require_relative './web/active_record_connection_management'
 require_relative './web/request_logger'
 require_relative './web/statsd_middleware'
