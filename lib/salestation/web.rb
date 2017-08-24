@@ -30,6 +30,7 @@ module Salestation
   end
 end
 
+require_relative './web/extractors'
 require_relative './web/responses'
 require_relative './web/error_mapper'
 require_relative './result_helper'

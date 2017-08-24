@@ -75,6 +75,50 @@ Salestation allows and recommends you to define your own custom errors. This is 
   })
 ```
 
+### Using Extractors
+
+Salestation provides extractors to fetch parameters from the request and pass them to the chain.
+Available extractors are `BodyParamExtractor`, `QueryParamExtractor`, `ConstantInput`, `HeadersExtractor`.
+Multiple extractors can be merged together. If two or more extractors use the same key, the value will be from the last extractor in the merge chain.
+
+`coercions` can optionally be provided to `BodyParamExtractor` and `QueryParamExtractor`. These can be used to transform the values of the extracted parameters.
+
+Define a route
+
+```ruby
+include Salestation::Web::Extractors
+
+post '/hello/:name' do |name|
+  coercions = {age: ->(age) { age.to_s }}
+
+  extractor = BodyParamExtractor[:age, coercions: coercions]
+    .merge(ConstantInput[name: name])
+    .merge(HeadersExtractor[{'authorization' => :auth}])
+
+  process extractor do |request|
+    HelloUser.call(request)
+      .map(Responses.to_ok)
+  end
+end
+
+ERROR_MAPPER = Salestation::Web::ErrorMapper.new
+
+def process(extract_input, &process_request)
+  response = extract_input.call(request).match do
+    Success() do |value|
+      create_request(value)
+        .map(process_request)
+        .map_err(&ERROR_MAPPER.map)
+    end
+    Failure() do |value|
+      Result::Success(value)
+    end
+  end
+rescue Salestation::Web::ErrorMapper::UndefinedErrorClass => exception
+  raise exception
+end
+```
+
 ### Using a logger
 
 Salestation provides a rack logging middleware which can be used to log structured objects.
