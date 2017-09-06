@@ -16,6 +16,8 @@ module Salestation
 
       class RequestedResourceNotFound < Dry::Struct
         constructor_type :strict
+
+        attribute :message, Types::Strict::String
       end
 
       class Forbidden < Dry::Struct
