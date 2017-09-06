@@ -14,7 +14,7 @@ module Salestation
           )
         },
         App::Errors::RequestedResourceNotFound => -> (error) {
-          Responses::NotFound.new(message: "Resource not found")
+          Responses::NotFound.new(message: error.message)
         },
         App::Errors::Forbidden => -> (error) {
           Responses::Forbidden.new(message: error.message)
