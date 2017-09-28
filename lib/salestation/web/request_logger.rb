@@ -12,9 +12,10 @@ module Salestation
       SERVER_NAME = 'SERVER_NAME'.freeze
       JSON_CONTENT_TYPE = 'application/json'.freeze
 
-      def initialize(app, logger)
+      def initialize(app, logger, log_response_body: true)
         @app = app
         @logger = logger
+        @log_response_body = log_response_body
       end
 
       def call(env)
@@ -49,9 +50,11 @@ module Salestation
       def response_log(env, status, headers, body, began_at)
         response_payload =
           if status >= 400
-            { error: parse_body(body) }
+            { error: parse_body(body, env) }
+          elsif @log_response_body
+            { body: parse_body(body, env) }
           else
-            { body: parse_body(body) }
+            {}
           end
 
         {
@@ -63,12 +66,12 @@ module Salestation
         }.merge(response_payload)
       end
 
-      def parse_body(body)
+      def parse_body(body, env)
         begin
           # Rack body is an array
-          JSON.parse(body.join())
+          JSON.parse(body.join)
         rescue Exception
-          {error: "Failed to parse response body"}
+          {error: 'Failed to parse response body'}
         end
       end
 
