@@ -1,3 +1,6 @@
+require 'securerandom'
+require 'json'
+
 module Salestation
   class Web < Module
     class RequestLogger
