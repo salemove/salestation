@@ -18,6 +18,9 @@ module Salestation
         },
         App::Errors::Forbidden => -> (error) {
           Responses::Forbidden.new(message: error.message)
+        },
+        App::Errors::Conflict => -> (error) {
+          Responses::Conflict.new(message: error.message, debug_message: error.debug_message)
         }
       }.freeze
 
