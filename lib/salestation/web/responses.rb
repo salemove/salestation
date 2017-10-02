@@ -93,6 +93,7 @@ module Salestation
       Unauthorized = Error.with_code(401)
       Forbidden = Error.with_code(403)
       NotFound = Error.with_code(404)
+      Conflict = Error.with_code(409)
       UnprocessableEntity = Error.with_code(422)
 
       InternalError = Error.with_code(500)
