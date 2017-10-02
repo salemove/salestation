@@ -13,6 +13,10 @@ module Salestation
         -> (object) { Deterministic::Result::Success(Responses::OK.new(body: object)) }
       end
 
+      def self.to_no_content
+        -> (*) { Deterministic::Result::Success(Responses::NoContent.new(body: {})) }
+      end
+
       module Response
         def with_code(code)
           Class.new(self) do
