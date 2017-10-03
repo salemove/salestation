@@ -72,6 +72,7 @@ module Salestation
       def parse_body(body, env)
         begin
           # Rack body is an array
+          return {} if body.empty?
           JSON.parse(body.join)
         rescue Exception
           {error: 'Failed to parse response body'}
