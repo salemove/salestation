@@ -32,6 +32,20 @@ module Salestation
         attribute :message, Types::Strict::String
         attribute :debug_message, Types::Strict::String
       end
+
+      class NotAcceptable < Dry::Struct
+        constructor_type :strict
+
+        attribute :message, Types::Strict::String
+        attribute :debug_message, Types::Strict::String
+      end
+
+      class UnsupportedMediaType < Dry::Struct
+        constructor_type :strict
+
+        attribute :message, Types::Strict::String
+        attribute :debug_message, Types::Strict::String
+      end
     end
   end
 end

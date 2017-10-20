@@ -21,6 +21,12 @@ module Salestation
         },
         App::Errors::Conflict => -> (error) {
           Responses::Conflict.new(message: error.message, debug_message: error.debug_message)
+        },
+        App::Errors::NotAcceptable => -> (error) {
+          Responses::NotAcceptable.new(message: error.message, debug_message: error.debug_message)
+        },
+        App::Errors::UnsupportedMediaType => -> (error) {
+          Responses::UnsupportedMediaType.new(message: error.message, debug_message: error.debug_message)
         }
       }.freeze
 
