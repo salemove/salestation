@@ -22,6 +22,35 @@ describe Salestation::Web::Extractors::HeadersExtractor do
     end
   end
 
+  context 'when headers with and without HTTP_ prefix' do
+    value = 'custom value'
+    request = rack_request.new({
+      'HTTP_X_CUSTOM_HEADER' => value,
+      'X_CUSTOM_HEADER' => 'other value'
+    })
+
+    it 'extracts header with HTTP_ prefix' do
+      result = extract_headers(request, 'x-custom-header' => :custom_key)
+
+      expect(result).to be_a(Deterministic::Result::Success)
+      expect(result.value).to eq(custom_key: value)
+    end
+  end
+
+  context 'when header does not start with HTTP_' do
+    value = 'custom value'
+    request = rack_request.new(
+      'CONTENT_TYPE' => value
+    )
+
+    it 'extracts header from request and assigns to specified key' do
+      result = extract_headers(request, 'content-type' => :custom_key)
+
+      expect(result).to be_a(Deterministic::Result::Success)
+      expect(result.value).to eq(custom_key: value)
+    end
+  end
+
   context 'when header does not exist' do
     request = rack_request.new({})
 
