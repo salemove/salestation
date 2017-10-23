@@ -50,6 +50,8 @@ module Salestation
           InputExtractor.new do |rack_request|
             input = headers.map do |header, key|
               value = rack_request.env["HTTP_#{header.upcase.tr('-', '_')}"]
+              value ||= rack_request.env["#{header.upcase.tr('-', '_')}"]
+
               next if value.nil?
               [key, value]
             end.compact.to_h
