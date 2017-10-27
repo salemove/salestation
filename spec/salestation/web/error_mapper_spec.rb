@@ -79,6 +79,21 @@ describe Salestation::Web::ErrorMapper do
       expect(response).to be_a(Salestation::Web::Responses::UnsupportedMediaType)
     end
   end
+
+  context 'when Errors::RequestEntityTooLarge' do
+    let(:error_mapper) { Salestation::Web::ErrorMapper.new }
+    let(:message) { 'request entity too large' }
+
+    it 'returns Responses::RequestEntityTooLarge' do
+      response = Salestation::App::Request.new(env: {}, input: {})
+        .to_failure(Salestation::App::Errors::RequestEntityTooLarge.new(message: message))
+        .map_err(&error_mapper.map)
+        .value
+
+      expect(response).to be_a(Salestation::Web::Responses::RequestEntityTooLarge)
+    end
+  end
+
   context 'when undefined error class' do
     let(:error_mapper) { Salestation::Web::ErrorMapper.new }
 

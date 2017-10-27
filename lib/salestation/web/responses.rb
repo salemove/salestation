@@ -99,6 +99,7 @@ module Salestation
       NotFound = Error.with_code(404)
       NotAcceptable = Error.with_code(406)
       Conflict = Error.with_code(409)
+      RequestEntityTooLarge = Error.with_code(413)
       UnsupportedMediaType = Error.with_code(415)
       UnprocessableEntity = Error.with_code(422)
 
