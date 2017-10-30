@@ -27,6 +27,9 @@ module Salestation
         },
         App::Errors::UnsupportedMediaType => -> (error) {
           Responses::UnsupportedMediaType.new(message: error.message, debug_message: error.debug_message)
+        },
+        App::Errors::RequestEntityTooLarge => -> (error) {
+          Responses::RequestEntityTooLarge.new(message: error.message)
         }
       }.freeze
 
