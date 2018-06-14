@@ -94,6 +94,20 @@ describe Salestation::Web::ErrorMapper do
     end
   end
 
+  context 'when Errors::InternalError' do
+    let(:error_mapper) { Salestation::Web::ErrorMapper.new }
+    let(:message) { 'internal error' }
+
+    it 'returns Responses::RequestEntityTooLarge' do
+      response = Salestation::App::Request.new(env: {}, input: {})
+        .to_failure(Salestation::App::Errors::InternalError.new(message: message))
+        .map_err(&error_mapper.map)
+        .value
+
+      expect(response).to be_a(Salestation::Web::Responses::InternalError)
+    end
+  end
+
   context 'when undefined error class' do
     let(:error_mapper) { Salestation::Web::ErrorMapper.new }
 

@@ -52,6 +52,12 @@ module Salestation
 
         attribute :message, Types::Strict::String
       end
+
+      class InternalError < Dry::Struct
+        constructor_type :strict
+
+        attribute :message, Types::Strict::String
+      end
     end
   end
 end
