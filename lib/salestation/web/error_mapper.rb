@@ -30,6 +30,9 @@ module Salestation
         },
         App::Errors::RequestEntityTooLarge => -> (error) {
           Responses::RequestEntityTooLarge.new(message: error.message)
+        },
+        App::Errors::InternalError => -> (error) {
+          Responses::InternalError.new(message: error.message)
         }
       }.freeze
 
