@@ -86,7 +86,14 @@ Multiple extractors can be merged together. If two or more extractors use the sa
 Define a route
 
 ```ruby
+include Salestation::Web.new
 include Salestation::Web::Extractors
+
+APP = Salestation::App.new(env: {})
+
+def create_app_request
+  -> (input) { App.create_request(input) }
+end
 
 post '/hello/:name' do |name|
   coercions = {age: ->(age) { age.to_s }}
@@ -95,27 +102,12 @@ post '/hello/:name' do |name|
     .merge(ConstantInput[name: name])
     .merge(HeadersExtractor[{'authorization' => :auth}])
 
-  process extractor do |request|
-    HelloUser.call(request)
-      .map(Responses.to_ok)
-  end
-end
+  response = extractor.call(request)
+    .map(create_app_request)
+    .map(HelloUser)
+    .map(Responses.to_ok)
 
-ERROR_MAPPER = Salestation::Web::ErrorMapper.new
-
-def process(extract_input, &process_request)
-  response = extract_input.call(request).match do
-    Success() do |value|
-      create_request(value)
-        .map(process_request)
-        .map_err(&ERROR_MAPPER.map)
-    end
-    Failure() do |value|
-      Result::Success(value)
-    end
-  end
-rescue Salestation::Web::ErrorMapper::UndefinedErrorClass => exception
-  raise exception
+  process(response)
 end
 ```
 

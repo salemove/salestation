@@ -20,7 +20,12 @@ module Salestation
         const_set :Responses, Salestation::Web::Responses
 
         define_method(:process) do |response|
-          result = response.map_err(error_mapper.map).value
+          result =
+            if response.value.is_a?(Salestation::Web::Responses::Response)
+              response.value
+            else
+              response.map_err(error_mapper.map).value
+            end
 
           status result.status
           json result.body

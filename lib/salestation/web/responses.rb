@@ -17,8 +17,8 @@ module Salestation
         -> (*) { Deterministic::Result::Success(Responses::NoContent.new(body: {})) }
       end
 
-      module Response
-        def with_code(code)
+      class Response < Dry::Struct
+        def self.with_code(code)
           Class.new(self) do
             define_singleton_method :new do |attrs|
               super(attrs.merge(status: code))
@@ -27,11 +27,8 @@ module Salestation
         end
       end
 
-      class Error < Dry::Struct
-        extend Response
-        constructor_type :strict_with_defaults
-
-        attribute :status, Types::Strict::Int
+      class Error < Response
+        attribute :status, Types::Strict::Integer
         attribute :message, Types::Strict::String
         attribute :debug_message, Types::String.default('')
         attribute :context, Types::Hash.default({})
@@ -41,11 +38,8 @@ module Salestation
         end
       end
 
-      class Success < Dry::Struct
-        extend Response
-        constructor_type :strict
-
-        attribute :status, Types::Strict::Int
+      class Success < Response
+        attribute :status, Types::Strict::Integer
         attribute :body, Types::Strict::Hash | Types::Strict::Array
       end
 
