@@ -28,6 +28,7 @@ module Salestation
             end
 
           status result.status
+          headers result.headers
           json result.body
         end
       end

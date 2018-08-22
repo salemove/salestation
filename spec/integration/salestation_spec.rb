@@ -12,6 +12,8 @@ describe 'Salestation' do
 
       def status(*); end
 
+      def headers(*); end
+
       def create_app_request(input)
         Salestation::App.new(env: {}).create_request(input)
       end
@@ -45,6 +47,8 @@ describe 'Salestation' do
       end
 
       def status(*); end
+
+      def headers(*); end
 
       def create_app_request
         lambda do |input|
