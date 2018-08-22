@@ -8,8 +8,9 @@ describe Salestation::Web do
       input.to_json
     end
 
-    def status(*)
-    end
+    def status(*); end
+
+    def headers(*); end
   end
 
   let(:web_app) { WebApp.new }

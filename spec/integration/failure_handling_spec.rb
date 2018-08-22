@@ -2,8 +2,9 @@ require 'spec_helper'
 
 describe 'Failure handling' do
   let(:custom_error_class) { Class.new(StandardError) }
-  let(:custom_error_response) { double(body: custom_response, status: 200) }
+  let(:custom_error_response) { double(body: custom_response, status: 200, headers: headers) }
   let(:custom_response) { {custom: 'response'} }
+  let(:headers) { {'X-Custom-Header' => 'Value'} }
 
   before do
     stub_const('CustomErrorClass', custom_error_class)
@@ -27,11 +28,17 @@ describe 'Failure handling' do
         process(chain.call(app.create_request({})))
       end
 
-      def status(*)
-      end
+      def status(*); end
+
+      def headers(*); end
     end
 
-    response = web_app.new.run
+    app = web_app.new
+    allow(app).to receive(:headers)
+
+    response = app.run
     expect(response).to eq(JSON.dump(custom_response))
+
+    expect(app).to have_received(:headers).with(headers)
   end
 end

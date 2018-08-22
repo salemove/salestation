@@ -3,8 +3,9 @@ require 'spec_helper'
 describe Salestation::Web::Responses::Success do
   subject(:create_success) { described_class.new(attributes) }
 
-  let(:attributes) { {status: status, body: body} }
+  let(:attributes) { {status: status, body: body, headers: headers} }
   let(:status) { 200 }
+  let(:headers) { {'X-Custom-Header' => 'Value'} }
 
   context 'when body is a hash' do
     let(:body) { {key: 'value'} }
@@ -15,6 +16,10 @@ describe Salestation::Web::Responses::Success do
 
     it 'has body' do
       expect(create_success.body).to eq(body)
+    end
+
+    it 'has headers' do
+      expect(create_success.headers).to eq(headers)
     end
   end
 
@@ -27,6 +32,10 @@ describe Salestation::Web::Responses::Success do
 
     it 'has body' do
       expect(create_success.body).to eq(body)
+    end
+
+    it 'has headers' do
+      expect(create_success.headers).to eq(headers)
     end
   end
 
