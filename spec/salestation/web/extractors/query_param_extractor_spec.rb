@@ -51,30 +51,4 @@ describe Salestation::Web::Extractors::QueryParamExtractor do
       expect(result.value).to eq(expected_result)
     end
   end
-
-  context 'with coercions' do
-    let(:params) do
-      {
-        'first_key' => 'first value',
-        'second_key' => 'second value'
-      }
-    end
-
-    let(:expected_result) do
-      {
-        first_key: 'new first value',
-        second_key: 'second value'
-      }
-    end
-
-    let(:coercions) { {first_key: ->(first_key) { 'new ' + first_key }} }
-    let(:options) { [:first_key, :second_key, {coercions: coercions}] }
-
-    it 'coerces param' do
-      result = extract_query_params
-
-      expect(result).to be_a(Deterministic::Result::Success)
-      expect(result.value).to eq(expected_result)
-    end
-  end
 end

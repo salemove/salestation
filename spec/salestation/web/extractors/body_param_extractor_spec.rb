@@ -8,12 +8,11 @@ rack_request = Class.new do
 end
 
 describe Salestation::Web::Extractors::BodyParamExtractor do
-  subject(:extract_body_params) { described_class[*options].call(request) }
-
   let(:request) { rack_request.new('rack.request.form_hash' => params) }
-  let(:options) { %i[first_key second_key] }
 
   context 'when body params exist' do
+    subject(:extract_body_params) { described_class[:first_key, :second_key].call(request) }
+
     let(:params) do
       {
         'first_key' => 'first value',
@@ -36,6 +35,8 @@ describe Salestation::Web::Extractors::BodyParamExtractor do
   end
 
   context 'when body param is missing' do
+    subject(:extract_body_params) { described_class[:first_key, :second_key].call(request) }
+
     let(:params) do
       {'first_key' => 'first value'}
     end
@@ -52,25 +53,13 @@ describe Salestation::Web::Extractors::BodyParamExtractor do
     end
   end
 
-  context 'with coercions' do
-    let(:params) do
-      {
-        'first_key' => 'first value',
-        'second_key' => 'second value'
-      }
-    end
+  context 'with nested keys' do
+    subject(:extract_body_params) { described_class[:x, {foo: [:bar]}].call(request) }
 
-    let(:expected_result) do
-      {
-        first_key: 'new first value',
-        second_key: 'second value'
-      }
-    end
+    let(:params) { {'x' => 'y', 'foo' => {'bar' => 'baz'}} }
+    let(:expected_result) { {x: 'y', foo: {bar: 'baz'}} }
 
-    let(:coercions) { {first_key: ->(first_key) { 'new ' + first_key }} }
-    let(:options) { [:first_key, :second_key, {coercions: coercions}] }
-
-    it 'coerces param' do
+    it 'extracts body params from request' do
       result = extract_body_params
 
       expect(result).to be_a(Deterministic::Result::Success)

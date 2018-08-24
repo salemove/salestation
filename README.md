@@ -96,11 +96,10 @@ def create_app_request
 end
 
 post '/hello/:name' do |name|
-  coercions = {age: ->(age) { age.to_s }}
-
-  extractor = BodyParamExtractor[:age, coercions: coercions]
+  extractor = BodyParamExtractor[:age]
     .merge(ConstantInput[name: name])
     .merge(HeadersExtractor[{'authorization' => :auth}])
+    .coerce(age: ->(age) { age.to_s })
 
   response = extractor.call(request)
     .map(create_app_request)

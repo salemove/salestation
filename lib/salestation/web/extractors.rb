@@ -15,6 +15,10 @@ module Salestation
         def merge(other)
           CombinedInputExtractor.new([self, other])
         end
+
+        def coerce(rules)
+          InputCoercer.new(self, rules)
+        end
       end
 
       class CombinedInputExtractor
@@ -41,6 +45,41 @@ module Salestation
         def merge(other_extractor)
           CombinedInputExtractor.new(@extractors + [other_extractor])
         end
+
+        def coerce(rules)
+          InputCoercer.new(self, rules)
+        end
+      end
+
+      # Handles coercing input values
+      #
+      # @example
+      #  extractor = BodyParamExtractor[:x, :y]
+      #    .coerce(x: ->(value) { "x_#{value}"})
+      #  input = {
+      #   'x' => 'a',
+      #   'y' => 'b',
+      #  }
+      #  # rack_request is Rack::Request with 'rack.request.form_hash' set to input
+      #  extractor.call(rack_request).value #=> {x: 'x_a', y: 'b'}
+      class InputCoercer
+        def initialize(extractor, rules)
+          @extractor = extractor
+          @rules = rules
+        end
+
+        def call(rack_request)
+          @extractor
+            .call(rack_request)
+            .map(&method(:coerce))
+        end
+
+        def coerce(input)
+          @rules.each do |field, coercer|
+            input[field] = coercer.call(@rules[field]) if input.key?(field)
+          end
+          Deterministic::Result::Success(input)
+        end
       end
 
       class HeadersExtractor
@@ -64,30 +103,53 @@ module Salestation
       class ParamExtractor
         include Deterministic
 
-        def self.[](*keys, coercions: {}, rack_key:)
+        def self.[](filters:, rack_key:)
           InputExtractor.new do |rack_request|
             request_hash = rack_request.env[rack_key] || {}
-
-            input = keys
-              .select { |key| request_hash.key?(key.to_s) }
-              .map { |key| [key, request_hash[key.to_s]] }
-              .map { |key, value| coercions.key?(key) ? [key, coercions[key].call(value)] : [key, value] }
-              .to_h
-
+            input = extract(filters, request_hash)
             Result::Success(input)
+          end
+        end
+
+        def self.extract(filters, request_hash)
+          filters.each_with_object({}) do |filter, extracted_data|
+            case filter
+            when Symbol
+              stringified_key = filter.to_s
+              extracted_data[filter] = request_hash[stringified_key] if request_hash.key?(stringified_key)
+            when Hash
+              filter.each do |key, nested_filters|
+                extracted_data[key] = extract(nested_filters, request_hash[key.to_s])
+              end
+            end
           end
         end
       end
 
       class QueryParamExtractor
-        def self.[](*keys, coercions: {})
-          ParamExtractor[*keys, coercions: coercions, rack_key: 'rack.request.query_hash']
+        def self.[](*filters)
+          ParamExtractor[filters: filters, rack_key: 'rack.request.query_hash']
         end
       end
 
+      # Extracts and symbolizes params from request body
+      #
+      # @example
+      #  extractor = BodyParamExtractor[:x, :y, {foo: [:bar, :baz]}]
+      #  input = {
+      #   'x' => '1',
+      #   'y' => '2',
+      #   'z' => '3',
+      #   'foo' => {
+      #     'bar' => 'qq'
+      #    }
+      #  }
+      #  # rack_request is Rack::Request with 'rack.request.form_hash' set to input
+      #  extractor.call(rack_request).value #=> {x: 1, y: 2, foo: {bar: 'qq}}
+      #
       class BodyParamExtractor
-        def self.[](*keys, coercions: {})
-          ParamExtractor[*keys, coercions: coercions, rack_key: 'rack.request.form_hash']
+        def self.[](*filters)
+          ParamExtractor[filters: filters, rack_key: 'rack.request.form_hash']
         end
       end
 
