@@ -23,7 +23,8 @@ describe 'Salestation' do
         chain = ->(request) { Deterministic::Result::Success(request.input) }
         extractor =
           Salestation::Web::Extractors::ConstantInput[foo1: 'bar1']
-          .merge(Salestation::Web::Extractors::ConstantInput[foo2: 'bar2'])
+          .merge(Salestation::Web::Extractors::ConstantInput[foo2: 'bar_2'])
+          .coerce(foo2: ->(_value) { 'bar2' })
 
         process(
           extractor.call(sinatra_request)
