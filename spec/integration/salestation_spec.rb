@@ -23,8 +23,8 @@ describe 'Salestation' do
         chain = ->(request) { Deterministic::Result::Success(request.input) }
         extractor =
           Salestation::Web::Extractors::ConstantInput[foo1: 'bar1']
-          .merge(Salestation::Web::Extractors::ConstantInput[foo2: 'bar_2'])
-          .coerce(foo2: ->(_value) { 'bar2' })
+          .merge(Salestation::Web::Extractors::ConstantInput[foo2: 'bar2'])
+          .coerce(foo2: ->(value) { "#{value}_baz" })
 
         process(
           extractor.call(sinatra_request)
@@ -36,7 +36,7 @@ describe 'Salestation' do
     end
 
     result = web_app.new.run
-    expect(result).to eq('{"foo1":"bar1","foo2":"bar2"}')
+    expect(result).to eq('{"foo1":"bar1","foo2":"bar2_baz"}')
   end
 
   it 'shows input error when unable to extract input using an extractor' do
