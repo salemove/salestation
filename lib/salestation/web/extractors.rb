@@ -76,7 +76,7 @@ module Salestation
 
         def coerce(input)
           @rules.each do |field, coercer|
-            input[field] = coercer.call(@rules[field]) if input.key?(field)
+            input[field] = coercer.call(input[field]) if input.key?(field)
           end
           Deterministic::Result::Success(input)
         end
