@@ -65,5 +65,17 @@ describe Salestation::Web::Extractors::BodyParamExtractor do
       expect(result).to be_a(Deterministic::Result::Success)
       expect(result.value).to eq(expected_result)
     end
+
+    context 'when nested key is missing from input' do
+      let(:params) { {'x' => 'y'} }
+      let(:expected_result) { {x: 'y'} }
+
+      it 'does not include missing key in extracted response' do
+        result = extract_body_params
+
+        expect(result).to be_a(Deterministic::Result::Success)
+        expect(result.value).to eq(expected_result)
+      end
+    end
   end
 end

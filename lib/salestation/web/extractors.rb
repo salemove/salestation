@@ -119,7 +119,9 @@ module Salestation
               extracted_data[filter] = request_hash[stringified_key] if request_hash.key?(stringified_key)
             when Hash
               filter.each do |key, nested_filters|
-                extracted_data[key] = extract(nested_filters, request_hash[key.to_s])
+                if request_hash.key?(key.to_s)
+                  extracted_data[key] = extract(nested_filters, request_hash.fetch(key.to_s))
+                end
               end
             end
           end
