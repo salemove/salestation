@@ -22,16 +22,12 @@ module Salestation
       end
 
       def call(env)
-        request_id = SecureRandom.hex(4)
-        request_logger = Logger.new(@logger, request_id)
-
-        env['request_logger'] = request_logger
         began_at = Time.now
 
-        request_logger.info('Received request', request_log(env))
+        @logger.info('Received request', request_log(env))
         @app.call(env).tap do |status, headers, body|
           type = status >= 500 ? :error : :info
-          request_logger.public_send(type, 'Processed request', response_log(env, status, headers, body, began_at))
+          @logger.public_send(type, 'Processed request', response_log(env, status, headers, body, began_at))
         end
       end
 
@@ -76,19 +72,6 @@ module Salestation
           JSON.parse(body.join)
         rescue Exception
           {error: 'Failed to parse response body'}
-        end
-      end
-
-      class Logger
-        def initialize(logger, request_id)
-          @logger = logger
-          @request_id = request_id
-        end
-
-        [:debug, :info, :warn, :error].each do |name|
-          define_method(name) do |msg, metadata = {}|
-            @logger.public_send(name, msg, metadata.merge(request_id: @request_id))
-          end
         end
       end
     end
