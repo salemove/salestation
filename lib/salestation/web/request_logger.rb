@@ -69,7 +69,11 @@ module Salestation
         begin
           # Rack body is an array
           return {} if body.empty?
-          JSON.parse(body.join)
+          if defined?(Oj)
+            Oj.load(body.join)
+          else
+            JSON.parse(body.join)
+          end
         rescue Exception
           {error: 'Failed to parse response body'}
         end
