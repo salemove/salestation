@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'securerandom'
 require 'json'
 
@@ -5,15 +7,15 @@ module Salestation
   class Web < Module
     class RequestLogger
 
-      REMOTE_ADDR = 'REMOTE_ADDR'.freeze
-      REQUEST_URI = 'REQUEST_URI'.freeze
-      REQUEST_METHOD = 'REQUEST_METHOD'.freeze
-      QUERY_STRING   = 'QUERY_STRING'.freeze
-      CONTENT_TYPE = 'CONTENT_TYPE'.freeze
-      HTTP_USER_AGENT = 'HTTP_USER_AGENT'.freeze
-      HTTP_ACCEPT = 'HTTP_ACCEPT'.freeze
-      SERVER_NAME = 'SERVER_NAME'.freeze
-      JSON_CONTENT_TYPE = 'application/json'.freeze
+      REMOTE_ADDR = 'REMOTE_ADDR'
+      REQUEST_URI = 'REQUEST_URI'
+      REQUEST_METHOD = 'REQUEST_METHOD'
+      QUERY_STRING = 'QUERY_STRING'
+      CONTENT_TYPE = 'CONTENT_TYPE'
+      HTTP_USER_AGENT = 'HTTP_USER_AGENT'
+      HTTP_ACCEPT = 'HTTP_ACCEPT'
+      SERVER_NAME = 'SERVER_NAME'
+      JSON_CONTENT_TYPE = 'application/json'
 
       def initialize(app, logger, log_response_body: true)
         @app = app
