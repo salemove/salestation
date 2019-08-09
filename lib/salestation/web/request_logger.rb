@@ -47,22 +47,21 @@ module Salestation
       end
 
       def response_log(env, status, headers, body, began_at)
-        response_payload =
-          if status >= 400
-            { error: parse_body(body, env) }
-          elsif @log_response_body
-            { body: parse_body(body, env) }
-          else
-            {}
-          end
-
-        {
+        log = {
           path: env[REQUEST_URI],
           method: env[REQUEST_METHOD],
           status: status,
           duration: Time.now - began_at,
           headers: headers
-        }.merge(response_payload)
+        }
+
+        if status >= 400
+          log[:error] = parse_body(body, env)
+        elsif @log_response_body
+          log[:body] = parse_body(body, env)
+        end
+
+        log
       end
 
       def parse_body(body, env)
