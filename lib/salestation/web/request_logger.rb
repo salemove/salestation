@@ -50,15 +50,15 @@ module Salestation
         }
 
         if status >= 400
-          log[:error] = parse_body(body, env)
+          log[:error] = parse_body(body)
         elsif @log_response_body
-          log[:body] = parse_body(body, env)
+          log[:body] = parse_body(body)
         end
 
         log
       end
 
-      def parse_body(body, env)
+      def parse_body(body)
         begin
           # Rack body is an array
           return {} if body.empty?
