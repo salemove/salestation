@@ -26,7 +26,6 @@ module Salestation
       def call(env)
         began_at = Time.now
 
-        @logger.info('Received request', request_log(env))
         @app.call(env).tap do |status, headers, body|
           type = status >= 500 ? :error : :info
           @logger.public_send(type, 'Processed request', response_log(env, status, headers, body, began_at))
@@ -35,8 +34,8 @@ module Salestation
 
       private
 
-      def request_log(env)
-        {
+      def response_log(env, status, headers, body, began_at)
+        log = {
           remote_addr:  env[REMOTE_ADDR],
           method:       env[REQUEST_METHOD],
           path:         env[REQUEST_URI],
@@ -44,17 +43,10 @@ module Salestation
           content_type: env[CONTENT_TYPE],
           http_agent:   env[HTTP_USER_AGENT],
           http_accept:  env[HTTP_ACCEPT],
-          server_name:  env[SERVER_NAME]
-        }
-      end
-
-      def response_log(env, status, headers, body, began_at)
-        log = {
-          path: env[REQUEST_URI],
-          method: env[REQUEST_METHOD],
-          status: status,
-          duration: Time.now - began_at,
-          headers: headers
+          server_name:  env[SERVER_NAME],
+          status:       status,
+          duration:     Time.now - began_at,
+          headers:      headers
         }
 
         if status >= 400
