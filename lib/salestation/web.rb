@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'deterministic'
 require 'dry-struct'
 require 'dry-types'
