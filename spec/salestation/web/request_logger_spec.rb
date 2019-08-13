@@ -15,16 +15,16 @@ describe Salestation::Web::RequestLogger do
   end
 
   describe '#call' do
-    it 'logs response body' do
+    it 'logs response body when response body logging is enabled' do
       expect(logger).to receive(:info).with(
         'Processed request',
         a_hash_including(body: { 'key' => 'value' })
       )
-      described_class.new(web_app, logger).call({})
+      described_class.new(web_app, logger, log_response_body: true).call({})
     end
 
     it 'does not log response body when response body logging is disabled' do
-      described_class.new(web_app, logger, log_response_body: false).call({})
+      described_class.new(web_app, logger).call({})
 
       expect(logger).to have_received(:info).with(
         'Processed request',
