@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 
-require 'securerandom'
 require 'json'
 
 module Salestation
@@ -17,7 +16,7 @@ module Salestation
       SERVER_NAME = 'SERVER_NAME'
       JSON_CONTENT_TYPE = 'application/json'
 
-      def initialize(app, logger, log_response_body: true)
+      def initialize(app, logger, log_response_body: false)
         @app = app
         @logger = logger
         @log_response_body = log_response_body
