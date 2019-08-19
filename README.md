@@ -98,10 +98,27 @@ end
 post '/hello/:name' do |name|
   extractor = BodyParamExtractor[:age]
     .merge(ConstantInput[name: name])
-    .merge(HeadersExtractor[{'authorization' => :auth}])
+    .merge(HeadersExtractor[
+      'accept' => :accept,
+      'content-type' => :content_type,
+      'x-my-value' => :my_value
+    ])
     .coerce(age: ->(age) { age.to_s })
 
+  validate_input = Salestation::Web::InputValidator[
+    accept: Salestation::Web::InputValidators::AcceptHeader['application/json', 'application/xml'],
+    content_type: Salestation::Web::InputValidators::ContentTypeHeader['application/json'],
+    my_value: lambda do |my_value|
+      if my_value == 'foo'
+        Deterministic::Result::Success(nil)
+      else
+        Deterministic::Result::Failure('invalid value')
+      end
+    end
+  ]
+
   response = extractor.call(request)
+    .map(validate_input)
     .map(create_app_request)
     .map(HelloUser)
     .map(Responses.to_ok)
