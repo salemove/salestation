@@ -10,7 +10,7 @@ module Salestation
             request.replace_input(result.output)
           else
             Deterministic::Result::Failure(
-              Errors::InvalidInput.new(errors: result.errors, hints: result.hints)
+              Errors::InvalidInput.new(errors: result.errors, hints: result.hints, debug_message: result.debug_message)
             )
           end
         end

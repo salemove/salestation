@@ -6,18 +6,22 @@ module Salestation
       class InvalidInput < Dry::Struct
         attribute :errors, Types::Strict::Hash
         attribute :hints, Types::Coercible::Hash.default({})
+        attribute? :debug_message, Types::Strict::String
       end
 
       class DependencyCurrentlyUnavailable < Dry::Struct
         attribute :message, Types::Strict::String
+        attribute? :debug_message, Types::Strict::String
       end
 
       class RequestedResourceNotFound < Dry::Struct
         attribute :message, Types::Strict::String
+        attribute? :debug_message, Types::Strict::String
       end
 
       class Forbidden < Dry::Struct
         attribute :message, Types::Strict::String
+        attribute? :debug_message, Types::Strict::String
       end
 
       class Conflict < Dry::Struct
@@ -37,6 +41,7 @@ module Salestation
 
       class RequestEntityTooLarge < Dry::Struct
         attribute :message, Types::Strict::String
+        attribute? :debug_message, Types::Strict::String
       end
     end
   end

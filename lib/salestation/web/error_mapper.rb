@@ -16,10 +16,10 @@ module Salestation
           )
         },
         App::Errors::RequestedResourceNotFound => -> (error) {
-          Responses::NotFound.new(message: error.message)
+          Responses::NotFound.new(message: error.message, debug_message: error.debug_message)
         },
         App::Errors::Forbidden => -> (error) {
-          Responses::Forbidden.new(message: error.message)
+          Responses::Forbidden.new(message: error.message, debug_message: error.debug_message)
         },
         App::Errors::Conflict => -> (error) {
           Responses::Conflict.new(message: error.message, debug_message: error.debug_message)
@@ -31,7 +31,7 @@ module Salestation
           Responses::UnsupportedMediaType.new(message: error.message, debug_message: error.debug_message)
         },
         App::Errors::RequestEntityTooLarge => -> (error) {
-          Responses::RequestEntityTooLarge.new(message: error.message)
+          Responses::RequestEntityTooLarge.new(message: error.message, debug_message: error.debug_message)
         }
       }.freeze
 
