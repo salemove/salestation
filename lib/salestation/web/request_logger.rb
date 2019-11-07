@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require 'json'
-
 module Salestation
   class Web < Module
     class RequestLogger
@@ -49,25 +47,12 @@ module Salestation
         }
 
         if status >= 400
-          log[:error] = parse_body(body)
+          log[:error] = body.join
         elsif @log_response_body
-          log[:body] = parse_body(body)
+          log[:body] = body.join
         end
 
         log
-      end
-
-      def parse_body(body)
-        # Rack body is an array
-        return {} if body.empty?
-
-        if defined?(Oj)
-          Oj.load(body.join)
-        else
-          JSON.parse(body.join)
-        end
-      rescue Exception
-        {error: 'Failed to parse response body'}
       end
     end
   end
