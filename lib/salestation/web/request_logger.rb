@@ -12,7 +12,6 @@ module Salestation
       HTTP_USER_AGENT = 'HTTP_USER_AGENT'
       HTTP_ACCEPT = 'HTTP_ACCEPT'
       SERVER_NAME = 'SERVER_NAME'
-      JSON_CONTENT_TYPE = 'application/json'
 
       def initialize(app, logger, log_response_body: false)
         @app = app
