@@ -3,7 +3,7 @@
 module Salestation
   class Web < Module
     class RequestLogger
-
+      DURATION_PRECISION = 6
       REMOTE_ADDR = 'REMOTE_ADDR'
       REQUEST_URI = 'REQUEST_URI'
       REQUEST_METHOD = 'REQUEST_METHOD'
@@ -20,7 +20,7 @@ module Salestation
       end
 
       def call(env)
-        began_at = Time.now
+        began_at = system_monotonic_time
 
         @app.call(env).tap do |status, headers, body|
           type = status >= 500 ? :error : :info
@@ -41,7 +41,7 @@ module Salestation
           http_accept:  env[HTTP_ACCEPT],
           server_name:  env[SERVER_NAME],
           status:       status,
-          duration:     Time.now - began_at,
+          duration:     duration(from: began_at),
           headers:      headers
         }
 
@@ -52,6 +52,14 @@ module Salestation
         end
 
         log
+      end
+
+      def duration(from:)
+        (system_monotonic_time - from).round(DURATION_PRECISION)
+      end
+
+      def system_monotonic_time
+        Process.clock_gettime(Process::CLOCK_MONOTONIC)
       end
     end
   end
