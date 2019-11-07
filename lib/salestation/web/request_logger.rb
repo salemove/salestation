@@ -1,11 +1,9 @@
 # frozen_string_literal: true
 
-require 'json'
-
 module Salestation
   class Web < Module
     class RequestLogger
-
+      DURATION_PRECISION = 6
       REMOTE_ADDR = 'REMOTE_ADDR'
       REQUEST_URI = 'REQUEST_URI'
       REQUEST_METHOD = 'REQUEST_METHOD'
@@ -14,7 +12,6 @@ module Salestation
       HTTP_USER_AGENT = 'HTTP_USER_AGENT'
       HTTP_ACCEPT = 'HTTP_ACCEPT'
       SERVER_NAME = 'SERVER_NAME'
-      JSON_CONTENT_TYPE = 'application/json'
 
       def initialize(app, logger, log_response_body: false)
         @app = app
@@ -23,7 +20,7 @@ module Salestation
       end
 
       def call(env)
-        began_at = Time.now
+        began_at = system_monotonic_time
 
         @app.call(env).tap do |status, headers, body|
           type = status >= 500 ? :error : :info
@@ -44,30 +41,25 @@ module Salestation
           http_accept:  env[HTTP_ACCEPT],
           server_name:  env[SERVER_NAME],
           status:       status,
-          duration:     Time.now - began_at,
+          duration:     duration(from: began_at),
           headers:      headers
         }
 
         if status >= 400
-          log[:error] = parse_body(body)
+          log[:error] = body.join
         elsif @log_response_body
-          log[:body] = parse_body(body)
+          log[:body] = body.join
         end
 
         log
       end
 
-      def parse_body(body)
-        # Rack body is an array
-        return {} if body.empty?
+      def duration(from:)
+        (system_monotonic_time - from).round(DURATION_PRECISION)
+      end
 
-        if defined?(Oj)
-          Oj.load(body.join)
-        else
-          JSON.parse(body.join)
-        end
-      rescue Exception
-        {error: 'Failed to parse response body'}
+      def system_monotonic_time
+        Process.clock_gettime(Process::CLOCK_MONOTONIC)
       end
     end
   end
