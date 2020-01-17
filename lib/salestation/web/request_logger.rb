@@ -13,22 +13,36 @@ module Salestation
       HTTP_ACCEPT = 'HTTP_ACCEPT'
       SERVER_NAME = 'SERVER_NAME'
 
-      def initialize(app, logger, log_response_body: false)
+      def initialize(app, logger, log_response_body: false, level: :info)
         @app = app
         @logger = logger
         @log_response_body = log_response_body
+        @level = level
       end
 
       def call(env)
         began_at = system_monotonic_time
 
         @app.call(env).tap do |status, headers, body|
-          type = status >= 500 ? :error : :info
-          @logger.public_send(type, 'Processed request', response_log(env, status, headers, body, began_at))
+          @logger.public_send(
+            determine_log_level(status),
+            'Processed request',
+            response_log(env, status, headers, body, began_at)
+          )
         end
       end
 
       private
+
+      def determine_log_level(status)
+        if status >= 500
+          :error
+        elsif status >= 400
+          :info
+        else
+          @level
+        end
+      end
 
       def response_log(env, status, headers, body, began_at)
         log = {

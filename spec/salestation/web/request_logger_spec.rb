@@ -34,6 +34,37 @@ describe Salestation::Web::RequestLogger do
       end
     end
 
+    context 'when log level is set to debug' do
+      let(:middleware) { described_class.new(web_app, logger, level: :debug) }
+
+      it 'logs messages with debug level' do
+        expect(logger).to receive(:debug).with(
+          'Processed request',
+          an_instance_of(Hash)
+        )
+
+        middleware.call({})
+      end
+
+      it 'logs requests with status code 4xx as info' do
+        expect(logger).to receive(:info).with(
+          'Processed request',
+          an_instance_of(Hash)
+        )
+
+        middleware.call(status: 404)
+      end
+
+      it 'logs requests with status code 5xx as error' do
+        expect(logger).to receive(:error).with(
+          'Processed request',
+          an_instance_of(Hash)
+        )
+
+        middleware.call(status: 500)
+      end
+    end
+
     context 'when response body logging is disabled' do
       let(:middleware) { described_class.new(web_app, logger) }
 
