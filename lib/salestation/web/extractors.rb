@@ -166,6 +166,28 @@ module Salestation
           end
         end
       end
+
+      # Extracts all parameters from request body without symbolizing the keys.
+      #
+      # @example
+      #  extractor = BodyExtractor[to: :custom_attributes]
+      #  input = {
+      #   'x' => '1',
+      #   'y' => '2'
+      #  }
+      #  # rack_request is Rack::Request with 'rack.request.form_hash' set to input
+      #  extractor.call(rack_request).value #=>
+      #    {custom_attributes: {'x' => '1', 'y' => '2'}}
+      #
+      class BodyExtractor
+        include Deterministic
+
+        def self.[](to:)
+          InputExtractor.new do |rack_request|
+            Result::Success(to => rack_request.env['rack.request.form_hash'])
+          end
+        end
+      end
     end
   end
 end
