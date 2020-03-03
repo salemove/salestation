@@ -82,6 +82,10 @@ module Salestation
           end
           Deterministic::Result::Success(input)
         end
+
+        def merge(other)
+          CombinedInputExtractor.new([self, other])
+        end
       end
 
       class HeadersExtractor
