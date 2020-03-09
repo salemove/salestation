@@ -3,6 +3,9 @@
 module Salestation
   class Web < Module
     class StatsdMiddleware
+      EXTRA_TAGS_ENV_KEY = 'salestation.statsd.tags'
+
+      DURATION_PRECISION = 6
 
       def initialize(app, statsd, metric:)
         @app = app
@@ -11,7 +14,7 @@ module Salestation
       end
 
       def call(env)
-        start = Time.now
+        start = system_monotonic_time
 
         status, header, body = @app.call env
 
@@ -23,13 +26,25 @@ module Salestation
             'unknown-route'
           end
 
-        @statsd.timing(@metric, (Time.now - start) * 1000, tags: [
+        tags = [
           "path:#{ path }",
           "method:#{ method }",
           "status:#{ status }"
-        ])
+        ] + env.fetch(EXTRA_TAGS_ENV_KEY, [])
+
+        @statsd.timing(@metric, duration(from: start), tags: tags)
 
         [status, header, body]
+      end
+
+      private
+
+      def duration(from:)
+        (system_monotonic_time - from).round(DURATION_PRECISION)
+      end
+
+      def system_monotonic_time
+        Process.clock_gettime(Process::CLOCK_MONOTONIC)
       end
     end
   end
