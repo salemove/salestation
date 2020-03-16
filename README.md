@@ -162,6 +162,32 @@ You can configure per-request tags by defining `salestation.statsd.tags` in sina
   end
 ```
 
+### Using ActiveRecord
+
+Salestation provides a connection pool instrumenter for activerecord that
+periodically sends connection pool stats.
+
+The following snippet expects that you have required and set up activerecord already.
+
+```ruby
+require 'salestation/web/active_record_stats'
+instrumenter = Salestation::ActiveRecordStats::ConnectionPoolInstrumenter.new(
+  connection_pool: ActiveRecord::Base.connection_pool,
+  statsd: statsd,
+  prefix: 'my_service.db.connection_pool'
+)
+instrumenter.start
+```
+
+Additionally Salestation provides a per-request rake middleware to count the
+number of queries and their runtime per each request.
+
+```ruby
+use Salestation::Web::ActiveRecordStatsMiddleware,
+  ENVIRONMENT.statsd,
+  metric_prefix: 'my_service.web.request.db'
+```
+
 ## Development
 
 After checking out the repo, run `bin/setup` to install dependencies. Then, run `rake spec` to run the tests. You can also run `bin/console` for an interactive prompt that will allow you to experiment.
