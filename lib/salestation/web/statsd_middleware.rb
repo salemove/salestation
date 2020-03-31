@@ -5,7 +5,7 @@ module Salestation
     class StatsdMiddleware
       EXTRA_TAGS_ENV_KEY = 'salestation.statsd.tags'
 
-      DURATION_PRECISION = 6
+      DURATION_MILLISECOND_PRECISION = 3
 
       def initialize(app, statsd, metric:)
         @app = app
@@ -32,15 +32,15 @@ module Salestation
           "status:#{ status }"
         ] + env.fetch(EXTRA_TAGS_ENV_KEY, [])
 
-        @statsd.timing(@metric, duration(from: start), tags: tags)
+        @statsd.timing(@metric, duration_ms(from: start), tags: tags)
 
         [status, header, body]
       end
 
       private
 
-      def duration(from:)
-        (system_monotonic_time - from).round(DURATION_PRECISION)
+      def duration_ms(from:)
+        ((system_monotonic_time - from) * 1000).round(DURATION_MILLISECOND_PRECISION)
       end
 
       def system_monotonic_time
