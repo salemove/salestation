@@ -32,7 +32,7 @@ module Salestation
       class Error < Response
         attribute :status, Types::Strict::Integer
         attribute :message, Types::Strict::String
-        attribute :debug_message, Types::String.default('')
+        attribute :debug_message, Types::Coercible::String.default('')
         attribute :context, Types::Hash.default({}.freeze)
         attribute :headers, Types::Hash.default({}.freeze)
 
