@@ -8,7 +8,7 @@ require 'json'
 module Salestation
   class Web < Module
     module Types
-      include Dry::Types.module
+      include Dry::Types()
     end
 
     def initialize(errors: {})

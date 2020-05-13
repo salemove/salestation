@@ -5,7 +5,7 @@ module Salestation
     module Errors
       class InvalidInput < Dry::Struct
         attribute :errors, Types::Strict::Hash
-        attribute :hints, Types::Coercible::Hash.default({})
+        attribute :hints, Types::Coercible::Hash.default({}.freeze)
         attribute? :debug_message, Types::Strict::String
       end
 

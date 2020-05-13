@@ -32,9 +32,9 @@ module Salestation
       class Error < Response
         attribute :status, Types::Strict::Integer
         attribute :message, Types::Strict::String
-        attribute :debug_message, Types::String.default('')
-        attribute :context, Types::Hash.default({})
-        attribute :headers, Types::Hash.default({})
+        attribute :debug_message, Types::Coercible::String.default('')
+        attribute :context, Types::Hash.default({}.freeze)
+        attribute :headers, Types::Hash.default({}.freeze)
 
         def body
           {message: message, debug_message: debug_message}
@@ -44,7 +44,7 @@ module Salestation
       class Success < Response
         attribute :status, Types::Strict::Integer
         attribute :body, Types::Strict::Hash | Types::Strict::Array
-        attribute :headers, Types::Hash.default({})
+        attribute :headers, Types::Hash.default({}.freeze)
       end
 
       class UnprocessableEntityFromSchemaErrors

@@ -7,7 +7,7 @@ require 'dry-types'
 module Salestation
   class App
     module Types
-      include Dry::Types.module
+      include Dry::Types()
     end
 
     def initialize(env:, hooks: {})
