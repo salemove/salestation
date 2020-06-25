@@ -142,14 +142,14 @@ end
 
 Salestation provides a StatsD middleware which can be used record request
 execution time. A `timing` call with elapsed seconds is made to the provided
-StatsD instance with `path`, `method`, `status` tags.
+StatsD instance with `path`, `method`, `status` and `status_class` tags.
 
 ```ruby
 class Webapp < Sinatra::Base
   # ...
   use Salestation::Web::StatsdMiddleware,
     Statsd.new(host, port),
-    metric: 'my-metric'
+    metric: 'my_service.response.time'
 end
 ```
 
@@ -157,7 +157,7 @@ You can configure per-request tags by defining `salestation.statsd.tags` in sina
 
 ```ruby
   def my_handler(env)
-    env['salestation.statsd.tags'] = ['foo', 'bar']
+    env['salestation.statsd.tags'] = ['foo:bar']
     # ...
   end
 ```
