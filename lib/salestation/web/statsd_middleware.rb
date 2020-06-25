@@ -27,9 +27,10 @@ module Salestation
           end
 
         tags = [
-          "path:#{ path }",
-          "method:#{ method }",
-          "status:#{ status }"
+          "path:#{path}",
+          "method:#{method}",
+          "status:#{status}",
+          "status_class:#{status / 100}xx"
         ] + env.fetch(EXTRA_TAGS_ENV_KEY, [])
 
         @statsd.timing(@metric, duration_ms(from: start), tags: tags)
