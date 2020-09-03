@@ -21,6 +21,10 @@ describe Salestation::Web::Responses::UnprocessableEntityFromSchemaErrors do
     it 'parses error debug message' do
       expect(error.debug_message).to eq("'content' is missing")
     end
+
+    it 'returns error hash' do
+      expect(error.form_errors).to eq(errors)
+    end
   end
 
   context 'error with multiple messages' do
@@ -33,6 +37,10 @@ describe Salestation::Web::Responses::UnprocessableEntityFromSchemaErrors do
 
     it 'parses error debug message' do
       expect(error.debug_message).to eq("'content' is missing and is invalid")
+    end
+
+    it 'returns error hash' do
+      expect(error.form_errors).to eq(errors)
     end
   end
 
@@ -68,6 +76,10 @@ describe Salestation::Web::Responses::UnprocessableEntityFromSchemaErrors do
       expect(error.debug_message).to eq(
         "'status' is missing and is invalid. 'message.id' is missing. 'message.content' is invalid. 'context' is invalid"
       )
+    end
+
+    it 'returns error hash' do
+      expect(error.form_errors).to eq(errors)
     end
   end
 end

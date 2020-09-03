@@ -41,6 +41,14 @@ module Salestation
         end
       end
 
+      class UnprocessableEntityError < Error
+        attribute :form_errors, Types::Hash.default({}.freeze)
+
+        def body
+          super.merge(form_errors: errors)
+        end
+      end
+
       class Success < Response
         attribute :status, Types::Strict::Integer
         attribute :body, Types::Strict::Hash | Types::Strict::Array
@@ -52,7 +60,7 @@ module Salestation
           message = parse_errors(errors)
           debug_message = parse_hints(hints)
 
-          UnprocessableEntity.new(message: message, debug_message: debug_message)
+          UnprocessableEntity.new(message: message, debug_message: debug_message, form_errors: errors)
         end
 
         def self.parse_errors(errors)
@@ -99,7 +107,7 @@ module Salestation
       Conflict = Error.with_code(409)
       RequestEntityTooLarge = Error.with_code(413)
       UnsupportedMediaType = Error.with_code(415)
-      UnprocessableEntity = Error.with_code(422)
+      UnprocessableEntity = UnprocessableEntityError.with_code(422)
 
       InternalError = Error.with_code(500)
       ServiceUnavailable = Error.with_code(503)
