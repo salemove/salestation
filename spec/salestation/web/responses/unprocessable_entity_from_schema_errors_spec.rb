@@ -24,6 +24,7 @@ describe Salestation::Web::Responses::UnprocessableEntityFromSchemaErrors do
 
     it 'returns error hash' do
       expect(error.form_errors).to eq(errors)
+      expect(error.body[:form_errors]).to eq(errors)
     end
   end
 

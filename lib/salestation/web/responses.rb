@@ -45,7 +45,7 @@ module Salestation
         attribute :form_errors, Types::Hash.default({}.freeze)
 
         def body
-          super.merge(form_errors: errors)
+          super.merge(form_errors: form_errors)
         end
       end
 
