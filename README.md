@@ -75,6 +75,28 @@ Salestation allows and recommends you to define your own custom errors. This is 
   })
 ```
 
+### Providing custom error fields
+
+If you need to specify additional error fields you can use `from` method.
+`from` accepts base error on which the rest of the response is built.
+Base error must be a hash or implement `to_h` method.
+
+Example:
+
+```
+App::Errors::Conflict.from({details: 'details'}, message: 'message', debug_message: 'debug_message')
+```
+
+Response:
+
+```javascript
+{
+  "details": "details",
+  "message": "message",
+  "debug_message": "debug_message"
+}
+```
+
 ### Using Extractors
 
 Salestation provides extractors to fetch parameters from the request and pass them to the chain.

@@ -83,4 +83,19 @@ describe Salestation::Web::Responses::UnprocessableEntityFromSchemaErrors do
       expect(error.form_errors).to eq(errors)
     end
   end
+
+  context 'with base error information' do
+    let(:attributes) { {
+      errors: errors,
+      hints: hints,
+      base_error: base_error
+    } }
+    let(:base_error) { {info: 'info'} }
+    let(:errors) { {content: ['is missing', 'is invalid']} }
+    let(:hints) { {content: ['is missing', 'is invalid']} }
+
+    it 'parses error debug message' do
+      expect(error.base_error).to eq(base_error)
+    end
+  end
 end

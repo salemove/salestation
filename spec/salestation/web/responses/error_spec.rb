@@ -10,13 +10,15 @@ describe Salestation::Web::Responses::Error do
       message: message,
       debug_message: debug_message,
       context: context,
-      headers: headers
+      headers: headers,
+      base_error: base_error
     }
   end
   let(:status) { 200 }
   let(:message) { 'message' }
   let(:debug_message) { 'debug message' }
   let(:context) { {foo: 'bar'} }
+  let(:base_error) { {info: 'info'} }
   let(:headers) { {'X-Custom-Header' => 'Value'} }
 
   it 'has status' do
@@ -35,12 +37,24 @@ describe Salestation::Web::Responses::Error do
     expect(create_error.context).to eq(context)
   end
 
-  it 'has message and debug_message in body' do
-    expect(create_error.body).to eql(message: message, debug_message: debug_message)
+  it 'has message, debug_message and merged base_error info in body' do
+    expect(create_error.body).to eql(message: message, debug_message: debug_message, info: base_error[:info])
   end
 
   it 'has headers' do
     expect(create_error.headers).to eq(headers)
+  end
+
+  it 'has base_error info' do
+    expect(create_error.base_error).to eq(base_error)
+  end
+
+  context 'when base_error contains message and debug_message' do
+    let(:base_error) { {message: 'message_override', debug_message: 'debug_message_override'} }
+
+    it 'does not override message and debug_message with values from base_error' do
+      expect(create_error.body).to eql(message: message, debug_message: debug_message)
+    end
   end
 
   context 'when debug message is missing' do

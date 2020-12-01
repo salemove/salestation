@@ -3,43 +3,51 @@
 module Salestation
   class App
     module Errors
-      class InvalidInput < Dry::Struct
+      class Error < Dry::Struct
+        attribute? :base_error, Types::Coercible::Hash
+
+        def self.from(base_error, overrides = {})
+          new(**overrides, base_error: base_error.to_h)
+        end
+      end
+
+      class InvalidInput < Error
         attribute :errors, Types::Strict::Hash
         attribute :hints, Types::Coercible::Hash.default({}.freeze)
         attribute? :debug_message, Types::Strict::String
       end
 
-      class DependencyCurrentlyUnavailable < Dry::Struct
+      class DependencyCurrentlyUnavailable < Error
         attribute :message, Types::Strict::String
         attribute? :debug_message, Types::Strict::String
       end
 
-      class RequestedResourceNotFound < Dry::Struct
+      class RequestedResourceNotFound < Error
         attribute :message, Types::Strict::String
         attribute? :debug_message, Types::Strict::String
       end
 
-      class Forbidden < Dry::Struct
+      class Forbidden < Error
         attribute :message, Types::Strict::String
         attribute? :debug_message, Types::Strict::String
       end
 
-      class Conflict < Dry::Struct
+      class Conflict < Error
         attribute :message, Types::Strict::String
         attribute :debug_message, Types::Strict::String
       end
 
-      class NotAcceptable < Dry::Struct
+      class NotAcceptable < Error
         attribute :message, Types::Strict::String
         attribute :debug_message, Types::Strict::String
       end
 
-      class UnsupportedMediaType < Dry::Struct
+      class UnsupportedMediaType < Error
         attribute :message, Types::Strict::String
         attribute :debug_message, Types::Strict::String
       end
 
-      class RequestEntityTooLarge < Dry::Struct
+      class RequestEntityTooLarge < Error
         attribute :message, Types::Strict::String
         attribute? :debug_message, Types::Strict::String
       end
