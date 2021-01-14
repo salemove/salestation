@@ -35,9 +35,11 @@ module Salestation
         attribute :debug_message, Types::Coercible::String.default('')
         attribute :context, Types::Hash.default({}.freeze)
         attribute :headers, Types::Hash.default({}.freeze)
+        attribute? :base_error, Types::Coercible::Hash
 
         def body
-          {message: message, debug_message: debug_message}
+          # Merge into `base_error` to ensure standard fields are not overriden
+          (base_error || {}).merge(message: message, debug_message: debug_message)
         end
       end
 
@@ -56,11 +58,11 @@ module Salestation
       end
 
       class UnprocessableEntityFromSchemaErrors
-        def self.create(errors:, hints:)
+        def self.create(errors:, hints:, base_error: nil)
           message = parse_errors(errors)
           debug_message = parse_hints(hints)
 
-          UnprocessableEntity.new(message: message, debug_message: debug_message, form_errors: errors)
+          UnprocessableEntity.new(message: message, debug_message: debug_message, form_errors: errors, base_error: base_error)
         end
 
         def self.parse_errors(errors)

@@ -12,26 +12,27 @@ module Salestation
         App::Errors::DependencyCurrentlyUnavailable => -> (error) {
           Responses::ServiceUnavailable.new(
             message: error.message,
-            debug_message: "Please try again later"
+            debug_message: "Please try again later",
+            base_error: error.base_error
           )
         },
         App::Errors::RequestedResourceNotFound => -> (error) {
-          Responses::NotFound.new(message: error.message, debug_message: error.debug_message)
+          Responses::NotFound.new(message: error.message, debug_message: error.debug_message, base_error: error.base_error)
         },
         App::Errors::Forbidden => -> (error) {
-          Responses::Forbidden.new(message: error.message, debug_message: error.debug_message)
+          Responses::Forbidden.new(message: error.message, debug_message: error.debug_message, base_error: error.base_error)
         },
         App::Errors::Conflict => -> (error) {
-          Responses::Conflict.new(message: error.message, debug_message: error.debug_message)
+          Responses::Conflict.new(message: error.message, debug_message: error.debug_message, base_error: error.base_error)
         },
         App::Errors::NotAcceptable => -> (error) {
-          Responses::NotAcceptable.new(message: error.message, debug_message: error.debug_message)
+          Responses::NotAcceptable.new(message: error.message, debug_message: error.debug_message, base_error: error.base_error)
         },
         App::Errors::UnsupportedMediaType => -> (error) {
-          Responses::UnsupportedMediaType.new(message: error.message, debug_message: error.debug_message)
+          Responses::UnsupportedMediaType.new(message: error.message, debug_message: error.debug_message, base_error: error.base_error)
         },
         App::Errors::RequestEntityTooLarge => -> (error) {
-          Responses::RequestEntityTooLarge.new(message: error.message, debug_message: error.debug_message)
+          Responses::RequestEntityTooLarge.new(message: error.message, debug_message: error.debug_message, base_error: error.base_error)
         }
       }.freeze
 
