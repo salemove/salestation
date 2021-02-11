@@ -44,10 +44,10 @@ module Salestation
       end
 
       class UnprocessableEntityError < Error
-        attribute :form_errors, Types::Hash.default({}.freeze)
+        attribute? :form_errors, Types::Coercible::Hash.optional
 
         def body
-          super.merge(form_errors: form_errors)
+          super.merge({form_errors: form_errors}.compact)
         end
       end
 
@@ -58,11 +58,16 @@ module Salestation
       end
 
       class UnprocessableEntityFromSchemaErrors
-        def self.create(errors:, hints:, base_error: nil)
+        def self.create(errors:, hints:, base_error: nil, form_errors: false)
           message = parse_errors(errors)
           debug_message = parse_hints(hints)
 
-          UnprocessableEntity.new(message: message, debug_message: debug_message, form_errors: errors, base_error: base_error)
+          UnprocessableEntity.new(
+            message: message,
+            debug_message: debug_message,
+            form_errors: form_errors ? errors : nil,
+            base_error: base_error
+          )
         end
 
         def self.parse_errors(errors)

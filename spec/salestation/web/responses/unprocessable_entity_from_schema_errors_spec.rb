@@ -5,6 +5,7 @@ describe Salestation::Web::Responses::UnprocessableEntityFromSchemaErrors do
   let(:attributes) { {
     errors: errors,
     hints: hints,
+    form_errors: true
   } }
 
   let(:errors) { {} }
@@ -96,6 +97,17 @@ describe Salestation::Web::Responses::UnprocessableEntityFromSchemaErrors do
 
     it 'parses error debug message' do
       expect(error.base_error).to eq(base_error)
+    end
+  end
+
+  context 'without enabling form errors' do
+    let(:attributes) { {
+      errors: {content: ['is missing', 'is invalid']},
+      hints: {content: ['is missing', 'is invalid']}
+    } }
+
+    it 'does not include form errors' do
+      expect(error.body.key?(:form_errors)).to eq(false)
     end
   end
 end
