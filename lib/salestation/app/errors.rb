@@ -15,6 +15,7 @@ module Salestation
         attribute :errors, Types::Strict::Hash
         attribute :hints, Types::Coercible::Hash.default({}.freeze)
         attribute? :debug_message, Types::Strict::String
+        attribute? :form_errors, Types::Strict::Bool.default(false)
       end
 
       class DependencyCurrentlyUnavailable < Error
