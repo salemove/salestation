@@ -7,7 +7,12 @@ require 'dry-types'
 module Salestation
   class App
     module Types
-      include Dry::Types()
+      dry_types_version = Gem.loaded_specs['dry-types'].version
+      if dry_types_version < Gem::Version.new('0.15.0')
+        include Dry::Types.module
+      else
+        include Dry::Types()
+      end
     end
 
     def initialize(env:, hooks: {})
