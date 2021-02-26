@@ -77,5 +77,29 @@ describe Salestation::Web::Extractors::BodyParamExtractor do
         expect(result.value).to eq(expected_result)
       end
     end
+
+    context 'when nested value is nil' do
+      let(:params) { {'x' => 'y', 'foo' => nil} }
+      let(:expected_result) { {x: 'y', foo: nil} }
+
+      it 'extracts body params from request' do
+        result = extract_body_params
+
+        expect(result).to be_a(Deterministic::Result::Success)
+        expect(result.value).to eq(expected_result)
+      end
+    end
+
+    context 'when nested value is empty' do
+      let(:params) { {'x' => 'y', 'foo' => {}} }
+      let(:expected_result) { {x: 'y', foo: {}} }
+
+      it 'extracts body params from request' do
+        result = extract_body_params
+
+        expect(result).to be_a(Deterministic::Result::Success)
+        expect(result.value).to eq(expected_result)
+      end
+    end
   end
 end
