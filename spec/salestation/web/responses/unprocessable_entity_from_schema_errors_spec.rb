@@ -110,4 +110,16 @@ describe Salestation::Web::Responses::UnprocessableEntityFromSchemaErrors do
       expect(error.body.key?(:form_errors)).to eq(false)
     end
   end
+
+  context 'when no error and hints' do
+    let(:attributes) { {
+      errors: nil,
+      hints: nil
+    } }
+
+    it 'sets message and debug_message to their default value' do
+      expect(error.message).to eq(nil)
+      expect(error.debug_message).to eq('')
+    end
+  end
 end

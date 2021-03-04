@@ -57,6 +57,16 @@ describe Salestation::Web::Responses::Error do
     end
   end
 
+  context 'when message is not provided' do
+    let(:base_error) { {message: 'base_error_message'} }
+    let(:message) { nil }
+
+    it 'uses message from base_error' do
+      error = create_error
+      expect(create_error.body).to eql(message: 'base_error_message', debug_message: debug_message)
+    end
+  end
+
   context 'when debug message is missing' do
     let(:attributes) { all_attributes.except(:debug_message) }
 
