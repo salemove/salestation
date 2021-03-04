@@ -12,44 +12,44 @@ module Salestation
       end
 
       class InvalidInput < Error
-        attribute :errors, Types::Strict::Hash
-        attribute :hints, Types::Coercible::Hash.default({}.freeze)
+        attribute? :errors, Types::Strict::Hash
+        attribute? :hints, Types::Coercible::Hash.default({}.freeze)
         attribute? :debug_message, Types::Strict::String
         attribute? :form_errors, Types::Strict::Bool.default(false)
       end
 
       class DependencyCurrentlyUnavailable < Error
-        attribute :message, Types::Strict::String
+        attribute? :message, Types::Strict::String
         attribute? :debug_message, Types::Strict::String
       end
 
       class RequestedResourceNotFound < Error
-        attribute :message, Types::Strict::String
+        attribute? :message, Types::Strict::String
         attribute? :debug_message, Types::Strict::String
       end
 
       class Forbidden < Error
-        attribute :message, Types::Strict::String
+        attribute? :message, Types::Strict::String
         attribute? :debug_message, Types::Strict::String
       end
 
       class Conflict < Error
-        attribute :message, Types::Strict::String
-        attribute :debug_message, Types::Strict::String
+        attribute? :message, Types::Strict::String
+        attribute? :debug_message, Types::Strict::String
       end
 
       class NotAcceptable < Error
-        attribute :message, Types::Strict::String
-        attribute :debug_message, Types::Strict::String
+        attribute? :message, Types::Strict::String
+        attribute? :debug_message, Types::Strict::String
       end
 
       class UnsupportedMediaType < Error
-        attribute :message, Types::Strict::String
-        attribute :debug_message, Types::Strict::String
+        attribute? :message, Types::Strict::String
+        attribute? :debug_message, Types::Strict::String
       end
 
       class RequestEntityTooLarge < Error
-        attribute :message, Types::Strict::String
+        attribute? :message, Types::Strict::String
         attribute? :debug_message, Types::Strict::String
       end
     end
