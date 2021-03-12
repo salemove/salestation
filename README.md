@@ -184,6 +184,29 @@ You can configure per-request tags by defining `salestation.statsd.tags` in sina
   end
 ```
 
+## RSpec helpers
+
+
+To use Salestation RSpec matchers you first need to include them:
+
+```
+require 'salestation/rspec'
+
+RSpec.configure do |config|
+  config.include Salestation::RSpec::Matchers
+end
+```
+
+After that it's possible to match against error results like this:
+
+```
+expect(result).to be_failure
+  .with_conflict
+  .containing(message: 'Oh noes')
+```
+
+See lib/salestation/rspec.rb for more examples.
+
 ## Development
 
 After checking out the repo, run `bin/setup` to install dependencies. Then, run `rake spec` to run the tests. You can also run `bin/console` for an interactive prompt that will allow you to experiment.

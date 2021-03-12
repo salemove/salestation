@@ -23,6 +23,8 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency "rake", "~> 13.0"
   spec.add_development_dependency "rspec", "~> 3.0"
   spec.add_development_dependency "pry", "~> 0.10.4"
+  spec.add_development_dependency "glia-errors", "~> 0.8"
+  spec.add_development_dependency "dry-validation"
 
   spec.add_dependency 'deterministic'
   spec.add_dependency 'dry-struct'

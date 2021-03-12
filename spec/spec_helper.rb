@@ -1,5 +1,8 @@
 $LOAD_PATH.unshift File.expand_path("../../lib", __FILE__)
-require "salestation"
+
+require 'salestation'
+require 'salestation/rspec'
+
 require 'pry'
 require_relative './salestation/support/hook_mock'
 
@@ -12,4 +15,5 @@ end
 RSpec.configure do |config|
   config.filter_run focus: true
   config.run_all_when_everything_filtered = true
+  config.include Salestation::RSpec::Matchers
 end
