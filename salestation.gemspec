@@ -4,7 +4,7 @@ $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
 
 Gem::Specification.new do |spec|
   spec.name          = "salestation"
-  spec.version       = "4.1.0"
+  spec.version       = "4.2.0"
   spec.authors       = ["Glia TechMovers"]
   spec.email         = ["techmovers@glia.com"]
 
@@ -23,6 +23,8 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency "rake", "~> 13.0"
   spec.add_development_dependency "rspec", "~> 3.0"
   spec.add_development_dependency "pry", "~> 0.10.4"
+  spec.add_development_dependency "glia-errors", "~> 0.8"
+  spec.add_development_dependency "dry-validation"
 
   spec.add_dependency 'deterministic'
   spec.add_dependency 'dry-struct'
