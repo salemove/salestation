@@ -26,4 +26,20 @@ describe Salestation::Web::InputValidators::AcceptHeader do
       expect(validate_header).to be_success
     end
   end
+
+  context 'when one of the accept mime types is allowed' do
+    let(:header_value) { 'application/vnd.salemove.v1+json, application/json' }
+
+    it 'returns success' do
+      expect(validate_header).to be_success
+    end
+  end
+
+  context 'when none of the accept mime types are allowed' do
+    let(:header_value) { 'application/csv, text/plain' }
+
+    it 'returns failure' do
+      expect(validate_header).to be_failure
+    end
+  end
 end

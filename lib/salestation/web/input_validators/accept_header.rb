@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require 'http/accept'
+
 module Salestation
   class Web < Module
     module InputValidators
@@ -15,9 +17,11 @@ module Salestation
         end
 
         def call(header_value)
-          header_valid = @allowed_headers.empty? || @allowed_headers.include?(header_value)
+          return Success(nil) if @allowed_headers.empty?
 
-          if header_valid
+          mime_types = HTTP::Accept::MediaTypes.parse(header_value).map(&:mime_type)
+
+          if (@allowed_headers & mime_types).any?
             Success(nil)
           else
             Failure(App::Errors::NotAcceptable.new(

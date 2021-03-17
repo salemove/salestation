@@ -29,4 +29,5 @@ Gem::Specification.new do |spec|
   spec.add_dependency 'deterministic'
   spec.add_dependency 'dry-struct'
   spec.add_dependency 'dry-types'
+  spec.add_dependency 'http-accept', '~> 2.1'
 end
