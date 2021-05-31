@@ -66,7 +66,7 @@ module Salestation
       end
 
       class UnprocessableEntityFromSchemaErrors
-        def self.create(errors:, hints:, base_error: nil, form_errors: false)
+        def self.create(errors: nil, hints: nil, base_error: nil, form_errors: false)
           message = errors ? parse_errors(errors) : nil
           debug_message = hints ? parse_hints(hints) : nil
 
