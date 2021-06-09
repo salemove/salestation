@@ -11,6 +11,7 @@ module Salestation
       CONTENT_TYPE = 'CONTENT_TYPE'
       HTTP_USER_AGENT = 'HTTP_USER_AGENT'
       HTTP_ACCEPT = 'HTTP_ACCEPT'
+      HTTP_ORIGIN = 'HTTP_ORIGIN'
       SERVER_NAME = 'SERVER_NAME'
 
       def initialize(app, logger, log_response_body: false, level: :info)
@@ -53,6 +54,7 @@ module Salestation
           content_type: env[CONTENT_TYPE],
           http_agent:   env[HTTP_USER_AGENT],
           http_accept:  env[HTTP_ACCEPT],
+          http_origin:  env[HTTP_ORIGIN],
           server_name:  env[SERVER_NAME],
           status:       status,
           duration:     duration(from: began_at),
