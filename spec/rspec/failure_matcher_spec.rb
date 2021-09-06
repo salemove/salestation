@@ -197,7 +197,7 @@ describe Salestation::RSpec::FailureMatcher do
           .with_invalid_input
           .containing(
             glia_input_validation_error
-              .on(:name).with_type(Glia::Errors::LIMIT_EXCEEDED_ERROR)
+              .on(:name).with_type(Glia::Errors::RESOURCE_LIMIT_EXCEEDED_ERROR)
               .on(:email).with_type(Glia::Errors::INVALID_VALUE_ERROR)
           )
           .matches?(failure)
@@ -241,7 +241,7 @@ describe Salestation::RSpec::FailureMatcher do
       expect(
         matcher
           .with_invalid_input
-          .containing(glia_input_validation_error.on(:name).with_type(Glia::Errors::LIMIT_EXCEEDED_ERROR))
+          .containing(glia_input_validation_error.on(:name).with_type(Glia::Errors::RESOURCE_LIMIT_EXCEEDED_ERROR))
           .matches?(failure)
       ).to eq(false)
     end
