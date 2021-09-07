@@ -19,7 +19,7 @@ module Salestation
         def call(header_value)
           return Success(nil) if @allowed_headers.empty?
 
-          mime_types = HTTP::Accept::MediaTypes.parse(header_value).map(&:mime_type)
+          mime_types = HTTP::Accept::MediaTypes.parse(header_value.to_s).map(&:mime_type)
 
           if (@allowed_headers & mime_types).any?
             Success(nil)
