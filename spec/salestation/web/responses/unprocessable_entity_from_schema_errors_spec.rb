@@ -1,7 +1,7 @@
 require 'spec_helper'
 
 describe Salestation::Web::Responses::UnprocessableEntityFromSchemaErrors do
-  subject(:error) { described_class.create(attributes) }
+  subject(:error) { described_class.create(**attributes) }
   let(:attributes) { {
     errors: errors,
     hints: hints,
