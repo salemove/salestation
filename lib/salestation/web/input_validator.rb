@@ -6,7 +6,7 @@ module Salestation
       include Deterministic::Prelude
 
       def self.[](**validations)
-        new(validations)
+        new(**validations)
       end
 
       def initialize(**validations)
