@@ -21,6 +21,10 @@ module Salestation
         def coerce(rules)
           InputCoercer.new(self, rules)
         end
+
+        def rename(rules)
+          InputRenamer.new(self, rules)
+        end
       end
 
       class CombinedInputExtractor
@@ -85,6 +89,76 @@ module Salestation
 
         def merge(other)
           CombinedInputExtractor.new([self, other])
+        end
+      end
+
+      # Handles renaming input keys
+      #
+      # When renaming we want to ensure that the new key provided for the rename does not already
+      # exist in the input. When it does and it has a not nil value, then rename will not happen,
+      # unless `override: true` is also applied. When the new key exists with nil value,
+      # rename will happen.
+      # By default override is set to false: when input already has value set for the new key,
+      # the old key will be discarded instead of overwriting the value.
+      # For deprecating (renaming for deprecation purposes), one should extract both new and old key
+      # from the input before calling the rename function, to get expected result, as only then the
+      # values can be compared in rename.
+      #
+      # @example
+      #  original_input = {
+      #    x: 'a',
+      #    y: 'b'
+      #  }
+      #
+      #  extractor = BodyParamExtractor[:x, :y]
+      #    .rename(x: :z)
+      #  input = {
+      #    z: 'a',
+      #    y: 'b'
+      #  }
+      #
+      #  extractor = BodyParamExtractor[:x, :y]
+      #    .rename(x: :y)
+      #  input = {
+      #    y: 'b'
+      #  }
+      #  extractor = BodyParamExtractor[:x, :y]
+      #    .rename(x: {new_key: :y, override: true})
+      #  input = {
+      #    y: 'a'
+      #  }
+      class InputRenamer
+        def initialize(extractor, rules)
+          @extractor = extractor
+          @rules = map_rules(rules)
+        end
+
+        def call(rack_request)
+          @extractor
+            .call(rack_request)
+            .map(&method(:rename))
+        end
+
+        def rename(input)
+          @rules.each do |old_key, rule|
+            new_key = rule[:new_key]
+            override = rule[:override]
+
+            if input[new_key].nil? || override
+              input[new_key] = input[old_key]
+            end
+
+            input.delete(old_key)
+          end
+          Deterministic::Result::Success(input)
+        end
+
+        private
+
+        def map_rules(rules)
+          rules.map do |field, rule|
+            [field, rule.is_a?(Hash) ? rule : {new_key: rule, override: false}]
+          end.to_h
         end
       end
 
