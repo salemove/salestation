@@ -5,7 +5,8 @@ module Salestation
     module InputVerification
       def verify_input(schema)
         -> (request) do
-          result = schema.call(request.input)
+          input = request.input
+          result = schema.call(input)
 
           dry_validation_version = Gem.loaded_specs['dry-validation'].version
           if dry_validation_version < Gem::Version.new('1.0')
@@ -19,7 +20,7 @@ module Salestation
             end
           elsif dry_validation_version <= Gem::Version.new('1.8')
             if result.success?
-              request.replace_input(result.to_h)
+              request.replace_input(input)
             else
               Deterministic::Result::Failure(
                 Errors::InvalidInput.new(errors: result.errors.to_h, hints: result.hints.to_h)
