@@ -54,10 +54,10 @@ describe Salestation::Web::Extractors::BodyParamExtractor do
   end
 
   context 'with nested keys' do
-    subject(:extract_body_params) { described_class[:x, {foo: [:bar]}].call(request) }
+    subject(:extract_body_params) { described_class[:x, {foo: [:bar, {a: [:b]}]}].call(request) }
 
-    let(:params) { {'x' => 'y', 'foo' => {'bar' => 'baz'}} }
-    let(:expected_result) { {x: 'y', foo: {bar: 'baz'}} }
+    let(:params) { {'x' => 'y', 'foo' => {'bar' => 'baz', 'a' => {'b' => 'c'}}} }
+    let(:expected_result) { {x: 'y', foo: {bar: 'baz', a: {b: 'c'}}} }
 
     it 'extracts body params from request' do
       result = extract_body_params
@@ -93,6 +93,80 @@ describe Salestation::Web::Extractors::BodyParamExtractor do
     context 'when nested value is empty' do
       let(:params) { {'x' => 'y', 'foo' => {}} }
       let(:expected_result) { {x: 'y', foo: {}} }
+
+      it 'extracts body params from request' do
+        result = extract_body_params
+
+        expect(result).to be_a(Deterministic::Result::Success)
+        expect(result.value).to eq(expected_result)
+      end
+    end
+
+    context 'when nested value is not a hash' do
+      let(:params) { {'x' => 'y', 'foo' => 'bar' } }
+      let(:expected_result) { {x: 'y', foo: 'bar' } }
+
+      it 'extracts body params from request' do
+        result = extract_body_params
+
+        expect(result).to be_a(Deterministic::Result::Success)
+        expect(result.value).to eq(expected_result)
+      end
+    end
+  end
+
+  context 'with array of hashes' do
+    subject(:extract_body_params) { described_class[:x, :webhooks].call(request) }
+
+    let(:params) { {'x' => 'y', 'webhooks' => [ {'foo' => 'bar'} ] } }
+    let(:expected_result) { {x: 'y', webhooks: [ {foo: 'bar'} ] } }
+
+    it 'extracts body params from request' do
+      result = extract_body_params
+
+      expect(result).to be_a(Deterministic::Result::Success)
+      expect(result.value).to eq(expected_result)
+    end
+
+    context 'when array is empty' do
+      let(:params) { {'x' => 'y', 'webhooks' => [] } }
+      let(:expected_result) { {x: 'y', webhooks: [] } }
+
+      it 'extracts body params from request' do
+        result = extract_body_params
+
+        expect(result).to be_a(Deterministic::Result::Success)
+        expect(result.value).to eq(expected_result)
+      end
+    end
+
+    context 'when hash is nil' do
+      let(:params) { {'x' => 'y', 'webhooks' => [ nil ] } }
+      let(:expected_result) { {x: 'y', webhooks: [ nil ] } }
+
+      it 'extracts body params from request' do
+        result = extract_body_params
+
+        expect(result).to be_a(Deterministic::Result::Success)
+        expect(result.value).to eq(expected_result)
+      end
+    end
+
+    context 'when hash is empty' do
+      let(:params) { {'x' => 'y', 'webhooks' => [ {} ] } }
+      let(:expected_result) { {x: 'y', webhooks: [ {} ] } }
+
+      it 'extracts body params from request' do
+        result = extract_body_params
+
+        expect(result).to be_a(Deterministic::Result::Success)
+        expect(result.value).to eq(expected_result)
+      end
+    end
+
+    context 'when array is strings' do
+      let(:params) { {'x' => 'y', 'webhooks' => [ "foobar" ] } }
+      let(:expected_result) { {x: 'y', webhooks: [ "foobar" ] } }
 
       it 'extracts body params from request' do
         result = extract_body_params

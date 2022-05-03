@@ -197,12 +197,26 @@ module Salestation
             when Symbol
               stringified_key = filter.to_s
               extracted_data[filter] = request_hash[stringified_key] if request_hash.key?(stringified_key)
+              if extracted_data[filter].is_a?(Array)
+                extracted_data[filter] = extracted_data[filter].map{ |hash|
+                  if hash.is_a?(Hash)
+                    hash.transform_keys(&:to_sym) if hash.is_a?(Hash)
+                  else
+                    hash
+                  end
+                }
+              end
             when Hash
               filter.each do |key, nested_filters|
                 stringified_key = key.to_s
                 if request_hash.key?(stringified_key)
                   value = request_hash.fetch(stringified_key)
-                  extracted_data[key] = value.nil? ? nil : extract(nested_filters, value)
+                  extracted_data[key] =
+                    if !value.is_a?(Hash)
+                      value
+                    else
+                      extract(nested_filters, value)
+                    end
                 end
               end
             end
@@ -219,17 +233,22 @@ module Salestation
       # Extracts and symbolizes params from request body
       #
       # @example
-      #  extractor = BodyParamExtractor[:x, :y, {foo: [:bar, :baz]}]
+      #  extractor = BodyParamExtractor[:x, :y, {foo: [:bar, :baz]}, :aaa]
       #  input = {
       #   'x' => '1',
       #   'y' => '2',
       #   'z' => '3',
       #   'foo' => {
       #     'bar' => 'qq'
-      #    }
+      #    },
+      #   'aaa' => [
+      #      {
+      #        'bb' => 'cc'
+      #      }
+      #    ]
       #  }
       #  # rack_request is Rack::Request with 'rack.request.form_hash' set to input
-      #  extractor.call(rack_request).value #=> {x: 1, y: 2, foo: {bar: 'qq}}
+      #  extractor.call(rack_request).value #=> {x: 1, y: 2, foo: {bar: 'qq'}, aaa: [{bb: 'cc'}]}
       #
       class BodyParamExtractor
         def self.[](*filters)
