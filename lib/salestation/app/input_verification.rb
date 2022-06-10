@@ -18,7 +18,7 @@ module Salestation
                 Errors::InvalidInput.new(errors: result.errors, hints: result.hints)
               )
             end
-          elsif dry_validation_version <= Gem::Version.new('1.8')
+          elsif dry_validation_version < Gem::Version.new('2.0')
             if result.success?
               request.replace_input(input)
             else
