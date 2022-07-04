@@ -245,6 +245,77 @@ describe Salestation::RSpec::FailureMatcher do
           .matches?(failure)
       ).to eq(false)
     end
+
+    it 'succeeds when glia error field message matches' do
+      validation_result = schema.call(name: nil, email: 1)
+
+      failure = Failure(
+        Errors::InvalidInput.from(
+          Glia::Errors.from_dry_validation_result(validation_result),
+          errors: validation_result.errors.to_h,
+          hints: {}
+        )
+      )
+
+      expect(
+        matcher
+          .with_invalid_input
+          .containing(
+            glia_input_validation_error
+              .on(:email)
+              .with_type(Glia::Errors::INVALID_TYPE_ERROR)
+              .with_message('Email must be of type string')
+          )
+          .matches?(failure)
+      ).to eq(true)
+    end
+
+    it 'fails when glia error field message does not match' do
+      validation_result = schema.call(name: nil, email: 1)
+
+      failure = Failure(
+        Errors::InvalidInput.from(
+          Glia::Errors.from_dry_validation_result(validation_result),
+          errors: validation_result.errors.to_h,
+          hints: {}
+        )
+      )
+
+      expect(
+        matcher
+          .with_invalid_input
+          .containing(
+            glia_input_validation_error
+              .on(:email)
+              .with_type(Glia::Errors::INVALID_TYPE_ERROR)
+              .with_message('whatever')
+          )
+          .matches?(failure)
+      ).to eq(false)
+    end
+
+    it 'fails when one field message of multiple field messages does not match' do
+      validation_result = schema.call(name: 1, email: 1)
+
+      failure = Failure(
+        Errors::InvalidInput.from(
+          Glia::Errors.from_dry_validation_result(validation_result),
+          errors: validation_result.errors.to_h,
+          hints: {}
+        )
+      )
+
+      expect(
+        matcher
+          .with_invalid_input
+          .containing(
+            glia_input_validation_error
+              .on(:name).with_type(Glia::Errors::INVALID_TYPE_ERROR).with_message('Email must be of type string')
+              .on(:email).with_type(Glia::Errors::INVALID_TYPE_ERROR).with_message('whatever')
+          )
+          .matches?(failure)
+      ).to eq(false)
+    end
   end
 
   def matcher

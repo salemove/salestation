@@ -12,6 +12,7 @@ module Salestation
       def initialize
         @fields = []
         @field_error_types = {}
+        @field_error_messages = {}
       end
 
       def on(field)
@@ -24,10 +25,16 @@ module Salestation
         self
       end
 
+      def with_message(*messages)
+        @field_error_messages[@fields.last] = messages
+        self
+      end
+
       def matches?(actual)
         @fields.all? do |field|
           check_field_exists(field, actual) &&
-            check_field_error_types(field, actual)
+            check_field_error_types(field, actual) &&
+            check_field_error_messages(field, actual)
         end
       end
 
@@ -43,6 +50,14 @@ module Salestation
         actual_error_types = actual[:error_details].fetch(field).map { |f| f.fetch(:type) }
 
         (@field_error_types[field] - actual_error_types).empty?
+      end
+
+      def check_field_error_messages(field, actual)
+        return true unless @field_error_messages[field]
+
+        actual_error_messages = actual[:error_details].fetch(field).map { |f| f.fetch(:message) }
+
+        (@field_error_messages[field] - actual_error_messages).empty?
       end
     end
   end
