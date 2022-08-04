@@ -107,7 +107,6 @@ describe Salestation::RSpec::FailureMatcher do
           .matches?(failure)
       ).to eq(false)
     end
-
   end
 
   context 'when using with Glia Errors & dry-validation' do
@@ -315,6 +314,106 @@ describe Salestation::RSpec::FailureMatcher do
           )
           .matches?(failure)
       ).to eq(false)
+    end
+
+    context 'with nested schema' do
+      let(:schema) do
+        Dry::Validation.Contract do
+          params do
+            required(:filters).hash do
+              required(:name).filled { type?(String) & min_size?(5) }
+              required(:email).filled { type?(String) }
+            end
+          end
+        end
+      end
+
+      let(:validation_result) { schema.call(filters: {name: nil, email: 1}) }
+      let(:failure) do
+        Failure(
+          Errors::InvalidInput.from(
+            Glia::Errors.from_dry_validation_result(validation_result),
+            errors: validation_result.errors.to_h,
+            hints: {}
+          )
+        )
+      end
+
+      it 'succeeds when error is nested error' do
+        expect(
+          matcher
+            .with_invalid_input
+            .containing(
+              glia_input_validation_error
+                .on(:filters, :email)
+                .with_type(Glia::Errors::INVALID_TYPE_ERROR)
+                .with_message('Email must be of type string')
+            )
+            .matches?(failure)
+        ).to eq(true)
+      end
+
+      it 'fails when error on a deeper level' do
+        expect(
+          matcher
+            .with_invalid_input
+            .containing(
+              glia_input_validation_error
+                .on(:filters, :deep, :email)
+                .with_type(Glia::Errors::INVALID_TYPE_ERROR)
+                .with_message('Email must be of type string')
+            )
+            .matches?(failure)
+        ).to eq(false)
+      end
+
+      it 'fails when error on a parent level' do
+        expect(
+          matcher
+            .with_invalid_input
+            .containing(
+              glia_input_validation_error
+                .on(:email)
+                .with_type(Glia::Errors::INVALID_TYPE_ERROR)
+                .with_message('Email must be of type string')
+            )
+            .matches?(failure)
+        ).to eq(false)
+      end
+
+      it 'fails when nested attribute does not exist' do
+        expect(
+          matcher
+            .with_invalid_input
+            .containing(
+              glia_input_validation_error.on(:filters, :unknown)
+            )
+            .matches?(failure)
+        ).to eq(false)
+      end
+
+      it 'fails when one field message of multiple field messages does not match' do
+        validation_result = schema.call(filters: {name: nil, email: 1})
+
+        failure = Failure(
+          Errors::InvalidInput.from(
+            Glia::Errors.from_dry_validation_result(validation_result),
+            errors: validation_result.errors.to_h,
+            hints: {}
+          )
+        )
+
+        expect(
+          matcher
+            .with_invalid_input
+            .containing(
+              glia_input_validation_error
+                .on(:filters, :name).with_type(Glia::Errors::INVALID_TYPE_ERROR).with_message('Email must be of type string')
+                .on(:filters, :email).with_type(Glia::Errors::INVALID_TYPE_ERROR).with_message('whatever')
+            )
+            .matches?(failure)
+        ).to eq(false)
+      end
     end
   end
 
