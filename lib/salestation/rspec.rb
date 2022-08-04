@@ -44,6 +44,23 @@ module Salestation
     #         .on(:phone_number).with_type(Glia::Errors::INVALID_FORMAT_ERROR)
     #     )
     #
+    # also has support for nested errors:
+    #  nesting can be represented by calling `on` method with multiple arguments, for example when
+    #  you have a hash like
+    #  {
+    #    nested: {
+    #      name: ''
+    #    }
+    #  }
+    #  Then you can call it like glia_input_validation_error.on(:nested, :name)
+    #
+    #   expect(result).to be_failure
+    #     .with_invalid_input
+    #     .containing(
+    #       glia_input_validation_error
+    #         .on(:nested, :name).with_type(Glia::Errors::INVALID_VALUE_ERROR)
+    #     )
+    #
     # Everything after be_failure is optional. You could also use `.containing`
     # multiple times like this:
     #
