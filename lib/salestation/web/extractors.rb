@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+require "symbolizer"
 
 module Salestation
   class Web < Module
@@ -192,35 +193,18 @@ module Salestation
         end
 
         def self.extract(filters, request_hash)
-          filters.each_with_object({}) do |filter, extracted_data|
-            case filter
-            when Symbol
-              stringified_key = filter.to_s
-              extracted_data[filter] = request_hash[stringified_key] if request_hash.key?(stringified_key)
-              if extracted_data[filter].is_a?(Array)
-                extracted_data[filter] = extracted_data[filter].map{ |hash|
-                  if hash.is_a?(Hash)
-                    hash.transform_keys(&:to_sym) if hash.is_a?(Hash)
-                  else
-                    hash
-                  end
-                }
-              end
-            when Hash
-              filter.each do |key, nested_filters|
-                stringified_key = key.to_s
-                if request_hash.key?(stringified_key)
-                  value = request_hash.fetch(stringified_key)
-                  extracted_data[key] =
-                    if !value.is_a?(Hash)
-                      value
-                    else
-                      extract(nested_filters, value)
-                    end
-                end
-              end
-            end
-          end
+          # Filter as a hash is used in some existing implementations that did not expect full 
+          # recursive symbolizing of keys. In this case hash objects at the highest level of object 
+          # are represented as hash of filter keys. This is no longer needed, but we support it 
+          # to avoid a breaking change.
+
+          filters_flat = filters
+                          .flat_map {|filter| filter.is_a?(Hash) ? filter.keys : filter}
+                          .map(&:to_s)
+
+          request_hash = request_hash.select {|k,v| filters_flat.include?(k)}
+
+          Symbolizer.symbolize(request_hash)
         end
       end
 

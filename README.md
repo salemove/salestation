@@ -104,6 +104,14 @@ Multiple extractors can be merged together. If two or more extractors use the sa
 
 `coercions` can optionally be provided to `BodyParamExtractor` and `QueryParamExtractor`. These can be used to transform the values of the extracted parameters.
 
+#### ParamExtractor
+
+ParamExtractor, which is also used by `BodyParamExtractor` and `QueryParamExtractor`, 
+extracts only the content of such root level keys that are specified when creating the
+extractor instance. All other root level keys are discarded. Everything inside the 
+whitelisted root level keys is automatically whitelisted.
+
+
 Define a route
 
 ```ruby

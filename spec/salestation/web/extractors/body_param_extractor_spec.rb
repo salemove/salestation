@@ -176,4 +176,145 @@ describe Salestation::Web::Extractors::BodyParamExtractor do
       end
     end
   end
+
+  # As agreed in https://github.com/salemove/salestation/pull/66,
+  # only highest level keys will effectively be whitelisted. That is
+  # why it is OK to have the 'g' included in the result, although it is
+  # not included in 'described_class' filters
+
+  context 'with filters as hashes' do
+    subject(:extract_body_params) { described_class[:x, {a: [:b, :c], d: [:e, :f]}].call(request) }
+
+    let(:params) { {'x' => 0, 'a' => { 'b' => 1, 'c' => 2}, 'd' => {'e' => 3, 'f' => 4, 'g' => 5}} }
+    let(:expected_result) { {x: 0, a: { b: 1, c: 2}, d: {e: 3, f: 4, g: 5} } }
+
+    it 'extracts body params from request' do
+      result = extract_body_params
+
+      expect(result).to be_a(Deterministic::Result::Success)
+      expect(result.value).to eq(expected_result)
+    end
+  end
+
+  context 'with complex nested structure' do
+    subject(:extract_body_params) { 
+      described_class[:name, :sources, :actions, :context, :post_conditions, :context_conditions, :enabled, :array_of_arrays]
+      .call(request) 
+    }
+
+    let(:params) { 
+      {
+        'name' => 'b',
+        'sources' => [
+          {'id' => 'source-id', 'type' => 'form-filling'},
+          {'id' => 'source_id2', 'type' => 'form_filling'}
+        ],
+        'actions' => [
+          {
+            'type' => 'set_queues_for_visitor',
+            'queue_ids' => [],
+            'frequency' => {
+              'type' => 'timeframe',
+              'filters' => [
+                {
+                  'max_occurrences' => 3,
+                  'timeframe' => 'hour',
+                  'some_list' => [
+                    'some_key' => 'some_content',
+                    'another_hash' => {
+                      'a' => 'b'
+                    }
+                  ]
+                },
+                {
+                  'max_occurrences' => 5,
+                  'timeframe' => 'day'
+                }
+              ]
+            }
+          }
+        ],
+        'enabled' => true,
+        'context' => { 
+          'site_id' => '00000000-0000-0000-0000-000000000000'
+        },
+        'post_conditions' => [
+          {
+            'condition1' => 'some condition'
+          },
+          {
+            'condition2' => 'another condition'
+          }
+        ],
+        'context_conditions' => {
+          'some_condition' => 'condition for context'
+        },
+        'array_of_arrays' => [
+          [ { 'key1' => 'value1', 'key2' => 'value2' }, { 'key3' => 'value3', 'key4' => 'value4' }],
+          [ { 'key5' => 'value5', 'key6' => 'value6' }, { 'key7' => 'value7', 'key8' => 'value8' }]
+        ]
+      }
+    }
+    
+    let(:expected_result) { 
+      { 
+        name: 'b',
+        sources: [
+          {id: 'source-id', type: 'form-filling'},
+          {id: 'source_id2', type: 'form_filling'}
+        ],
+        actions: [
+          {
+            type: 'set_queues_for_visitor',
+            queue_ids: [],
+            frequency: {
+              type: 'timeframe',
+              filters: [
+                {
+                  max_occurrences: 3,
+                  timeframe: 'hour',
+                  some_list: [
+                    some_key: 'some_content',
+                    another_hash: {
+                      a: 'b'
+                    }
+                  ]
+                },
+                {
+                  max_occurrences: 5,
+                  timeframe: 'day'
+                }
+              ]
+            }
+          }
+        ],
+        enabled: true,
+        context: { 
+          site_id: '00000000-0000-0000-0000-000000000000'
+        },
+        post_conditions: [
+          {
+            condition1: 'some condition'
+          },
+          {
+            condition2: 'another condition'
+          }
+        ],
+        context_conditions: {
+          some_condition: 'condition for context'
+        },
+        array_of_arrays: [
+          [ { key1: 'value1', key2: 'value2' }, { key3: 'value3', key4: 'value4' }],
+          [ { key5: 'value5', key6: 'value6' }, { key7: 'value7', key8: 'value8' }]
+        ]
+      }
+    }
+
+    it 'extracts body params from request' do
+      result = extract_body_params
+
+      expect(result).to be_a(Deterministic::Result::Success)
+      expect(result.value).to eq(expected_result)
+    end
+  end
 end
