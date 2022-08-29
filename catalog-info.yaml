@@ -1,0 +1,15 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: salestation
+  description: Common processing across ruby services
+  annotations:
+    github.com/project-slug: salemove/salestation
+    github.com/team-slug: salemove/movers
+    snyk.io/org-name: glia-movers
+  tags:
+    - ruby
+spec:
+  type: library
+  lifecycle: production
+  owner: movers
