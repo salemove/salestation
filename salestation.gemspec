@@ -4,7 +4,7 @@ $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
 
 Gem::Specification.new do |spec|
   spec.name          = "salestation"
-  spec.version       = "5.1.0"
+  spec.version       = "5.2.0"
   spec.authors       = ["Glia TechMovers"]
   spec.email         = ["techmovers@glia.com"]
 
@@ -30,4 +30,5 @@ Gem::Specification.new do |spec|
   spec.add_dependency 'dry-struct'
   spec.add_dependency 'dry-types'
   spec.add_dependency 'http-accept', '~> 2.1'
+  spec.add_dependency 'symbolizer'
 end
