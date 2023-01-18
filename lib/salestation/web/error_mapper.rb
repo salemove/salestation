@@ -7,7 +7,7 @@ module Salestation
 
       ERROR_TO_RESPONSE_DEFAULTS = {
         App::Errors::InvalidInput => -> (error) {
-          Responses::UnprocessableEntityFromSchemaErrors.create(error)
+          Responses::UnprocessableEntityFromSchemaErrors.create(**error)
         },
         App::Errors::DependencyCurrentlyUnavailable => -> (error) {
           Responses::ServiceUnavailable.new(
