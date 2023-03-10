@@ -51,4 +51,26 @@ describe Salestation::Web::Extractors::QueryParamExtractor do
       expect(result.value).to eq(expected_result)
     end
   end
+
+  context 'when query string contains non UTF-8 characters' do
+    let(:params) do
+      {
+        'first_key' => 'first value \255',
+        'second_key' => 'second value \C0'
+      }
+    end
+
+    let(:expected_result) do
+      {
+        first_key: 'first value \\255',
+        second_key: 'second value \\C0'
+      }
+    end
+
+    it 'extracts query params from request' do
+      result = extract_query_params
+      expect(result).to be_a(Deterministic::Result::Success)
+      expect(result.value).to eq(expected_result)
+    end
+  end
 end
