@@ -37,7 +37,7 @@ module Salestation
       end
 
       def matches?(actual)
-        check_exact_match(actual, path_list_to_trie(@fields)) &&
+        check_exact_match(actual, self.class.path_list_to_trie(@fields)) &&
           @fields.all? do |field|
             check_field_exists(actual, *field) &&
               check_field_error_types(field, actual) &&
@@ -104,18 +104,31 @@ module Salestation
         fields.join('->').to_sym
       end
 
-      def path_list_to_trie(paths)
-        paths.reduce({}) do |acc, path|
-          deep_merge(acc, path_to_trie(*path))
+      class << self
+        # @example
+        #  path_list_to_trie([[:a, :b, :c], [:a, :b, :d], [:a, :e]])
+        #  #=> {a: {b: {c: {}, d: {}}, e: {}}}
+        def path_list_to_trie(paths)
+          paths.reduce({}) do |acc, path|
+            deep_merge(acc, path_to_trie(*path))
+          end
         end
-      end
 
-      def path_to_trie(element, *rest)
-        {element.to_sym => rest.empty? ? {} : path_to_trie(*rest)}
-      end
+        private
 
-      def deep_merge(a, b)
-        a.merge(b) { |_key, nested_a, nested_b| deep_merge(nested_a, nested_b) }
+        # @example
+        #  path_to_trie(*[:a, :b, :c])
+        #  #=> {a: {b: {c: {}}}}
+        def path_to_trie(element, *rest)
+          {element.to_sym => rest.empty? ? {} : path_to_trie(*rest)}
+        end
+
+        # @example
+        #  deep_merge({a: {b: {c: {}}}}, {a: {b: {d: {}}, e: {}}})
+        #  #=> {a: {b: {c: {}, d: {}}, e: {}}}
+        def deep_merge(a, b)
+          a.merge(b) { |_key, nested_a, nested_b| deep_merge(nested_a, nested_b) }
+        end
       end
     end
   end
