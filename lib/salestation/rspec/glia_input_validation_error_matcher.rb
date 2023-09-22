@@ -13,10 +13,16 @@ module Salestation
         @fields = []
         @field_error_types = {}
         @field_error_messages = {}
+        @expect_exact_match = false
       end
 
       def on(*nested_fields)
         @fields << nested_fields
+        self
+      end
+
+      def exactly
+        @expect_exact_match = true
         self
       end
 
@@ -31,14 +37,31 @@ module Salestation
       end
 
       def matches?(actual)
-        @fields.all? do |field|
-          check_field_exists(actual, *field) &&
-            check_field_error_types(field, actual) &&
-            check_field_error_messages(field, actual)
-        end
+        check_exact_match(actual, path_list_to_trie(@fields)) &&
+          @fields.all? do |field|
+            check_field_exists(actual, *field) &&
+              check_field_error_types(field, actual) &&
+              check_field_error_messages(field, actual)
+          end
       end
 
       private
+
+      def check_exact_match(actual, field_trie)
+        return true unless @expect_exact_match
+
+        actual[:error_details].keys.all? do |key|
+          field_trie.any? do |field, nested_field_trie|
+            if nested_field_trie.empty?
+              field == key
+            else
+              actual[:error_details][field].all? do |nested_actual|
+                check_exact_match(nested_actual, nested_field_trie)
+              end
+            end
+          end
+        end
+      end
 
       def check_field_exists(actual, field, *nested_fields)
         actual[:error_details].key?(field) &&
@@ -79,6 +102,20 @@ module Salestation
 
       def field_to_key(fields)
         fields.join('->').to_sym
+      end
+
+      def path_list_to_trie(paths)
+        paths.reduce({}) do |acc, path|
+          deep_merge(acc, path_to_trie(*path))
+        end
+      end
+
+      def path_to_trie(element, *rest)
+        {element.to_sym => rest.empty? ? {} : path_to_trie(*rest)}
+      end
+
+      def deep_merge(a, b)
+        a.merge(b) { |_key, nested_a, nested_b| deep_merge(nested_a, nested_b) }
       end
     end
   end

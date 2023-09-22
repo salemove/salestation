@@ -316,6 +316,44 @@ describe Salestation::RSpec::FailureMatcher do
       ).to eq(false)
     end
 
+    it 'fails when only one of many fields are specified for an exact match' do
+      validation_result = schema.call(name: nil, email: nil)
+
+      failure = Failure(
+        Errors::InvalidInput.from(
+          Glia::Errors.from_dry_validation_result(validation_result),
+          errors: validation_result.errors.to_h,
+          hints: {}
+        )
+      )
+
+      expect(
+        matcher
+          .with_invalid_input
+          .containing(glia_input_validation_error.exactly.on(:name))
+          .matches?(failure)
+      ).to eq(false)
+    end
+
+    it 'succeeds when all fields are specified for an exact match' do
+      validation_result = schema.call(name: nil, email: nil)
+
+      failure = Failure(
+        Errors::InvalidInput.from(
+          Glia::Errors.from_dry_validation_result(validation_result),
+          errors: validation_result.errors.to_h,
+          hints: {}
+        )
+      )
+
+      expect(
+        matcher
+          .with_invalid_input
+          .containing(glia_input_validation_error.exactly.on(:name).on(:email))
+          .matches?(failure)
+      ).to eq(true)
+    end
+
     context 'with nested schema' do
       let(:schema) do
         Dry::Validation.Contract do
@@ -403,6 +441,42 @@ describe Salestation::RSpec::FailureMatcher do
             )
             .matches?(failure)
         ).to eq(false)
+      end
+
+      it 'succeeds when all top-level fields are specified without nested expectations for an exact match' do
+        expect(
+          matcher
+            .with_invalid_input
+            .containing(glia_input_validation_error.exactly.on(:filters))
+            .matches?(failure)
+        ).to eq(true)
+      end
+
+      it 'fails when some but not all nested fields are specified for an exact match' do
+        expect(
+          matcher
+            .with_invalid_input
+            .containing(
+              glia_input_validation_error
+                .exactly
+                .on(:filters, :name)
+            )
+            .matches?(failure)
+        ).to eq(false)
+      end
+
+      it 'succeeds when all nested fields are specified for an exact match' do
+        expect(
+          matcher
+            .with_invalid_input
+            .containing(
+              glia_input_validation_error
+                .exactly
+                .on(:filters, :name)
+                .on(:filters, :email)
+            )
+            .matches?(failure)
+        ).to eq(true)
       end
     end
   end
