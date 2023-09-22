@@ -393,16 +393,6 @@ describe Salestation::RSpec::FailureMatcher do
       end
 
       it 'fails when one field message of multiple field messages does not match' do
-        validation_result = schema.call(filters: {name: nil, email: 1})
-
-        failure = Failure(
-          Errors::InvalidInput.from(
-            Glia::Errors.from_dry_validation_result(validation_result),
-            errors: validation_result.errors.to_h,
-            hints: {}
-          )
-        )
-
         expect(
           matcher
             .with_invalid_input
