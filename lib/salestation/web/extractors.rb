@@ -61,14 +61,15 @@ module Salestation
       # Handles coercing input values
       #
       # @example
-      #  extractor = BodyParamExtractor[:x, :y]
+      #  extractor = Salestation::Web::Extractors::BodyParamExtractor[:x, :y]
       #    .coerce(x: ->(value) { "x_#{value}"})
       #  input = {
       #   'x' => 'a',
       #   'y' => 'b',
       #  }
       #  # rack_request is Rack::Request with 'rack.request.form_hash' set to input
-      #  extractor.call(rack_request).value #=> {x: 'x_a', y: 'b'}
+      #  extractor.call(rack_request(input)).value
+      #  #=> {x: 'x_a', y: 'b'}
       class InputCoercer
         def initialize(extractor, rules)
           @extractor = extractor
@@ -106,28 +107,25 @@ module Salestation
       # values can be compared in rename.
       #
       # @example
-      #  original_input = {
-      #    x: 'a',
-      #    y: 'b'
+      #  input = {
+      #    'x' => 'a',
+      #    'y' => 'b'
       #  }
       #
-      #  extractor = BodyParamExtractor[:x, :y]
+      #  extractor = Salestation::Web::Extractors::BodyParamExtractor[:x, :y]
       #    .rename(x: :z)
-      #  input = {
-      #    z: 'a',
-      #    y: 'b'
-      #  }
+      #  extractor.call(rack_request(input)).value
+      #  #=> {z: 'a', y: 'b'}
       #
-      #  extractor = BodyParamExtractor[:x, :y]
+      #  extractor = Salestation::Web::Extractors::BodyParamExtractor[:x, :y]
       #    .rename(x: :y)
-      #  input = {
-      #    y: 'b'
-      #  }
-      #  extractor = BodyParamExtractor[:x, :y]
+      #  extractor.call(rack_request(input)).value
+      #  #=> {y: 'b'}
+      #
+      #  extractor = Salestation::Web::Extractors::BodyParamExtractor[:x, :y]
       #    .rename(x: {new_key: :y, override: true})
-      #  input = {
-      #    y: 'a'
-      #  }
+      #  extractor.call(rack_request(input)).value
+      #  #=> {y: 'a'}
       class InputRenamer
         def initialize(extractor, rules)
           @extractor = extractor
@@ -217,7 +215,7 @@ module Salestation
       # Extracts and symbolizes params from request body
       #
       # @example
-      #  extractor = BodyParamExtractor[:x, :y, {foo: [:bar, :baz]}, :aaa]
+      #  extractor = Salestation::Web::Extractors::BodyParamExtractor[:x, :y, {foo: [:bar, :baz]}, :aaa]
       #  input = {
       #   'x' => '1',
       #   'y' => '2',
@@ -232,7 +230,8 @@ module Salestation
       #    ]
       #  }
       #  # rack_request is Rack::Request with 'rack.request.form_hash' set to input
-      #  extractor.call(rack_request).value #=> {x: 1, y: 2, foo: {bar: 'qq'}, aaa: [{bb: 'cc'}]}
+      #  extractor.call(rack_request(input)).value
+      #  #=> {x: '1', y: '2', foo: {bar: 'qq'}, aaa: [{bb: 'cc'}]}
       #
       class BodyParamExtractor
         def self.[](*filters)

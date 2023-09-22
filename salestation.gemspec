@@ -25,6 +25,7 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency "pry", "~> 0.14.2"
   spec.add_development_dependency "glia-errors", "~> 0.11.4"
   spec.add_development_dependency "dry-validation", "~> 1.7"
+  spec.add_development_dependency "yard-doctest", "~> 0.1.17"
 
   spec.add_dependency 'deterministic'
   spec.add_dependency 'dry-struct'
