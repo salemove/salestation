@@ -15,8 +15,9 @@ jobs:
 
 
       - name: Release Gem
-        uses: discourse/publish-rubygems-action@b55d7b91b55e61752dc6cbc2972f8e16fe6c1a02
+        uses: discourse/publish-rubygems-action@4bd305c65315cb691bad1e8de97a87aaf29a0a85
         env:
-          GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
           RUBYGEMS_API_KEY: ${{secrets.RUBYGEMS_API_KEY}}
           RELEASE_COMMAND: rake release
+          GIT_EMAIL: support@salemove.com
+          GIT_NAME: sm-deployer
