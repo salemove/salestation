@@ -8,12 +8,7 @@ require 'json'
 module Salestation
   class Web < Module
     module Types
-      dry_types_version = Gem.loaded_specs['dry-types'].version
-      if dry_types_version < Gem::Version.new('0.15.0')
-        include Dry::Types.module
-      else
-        include Dry::Types()
-      end
+      include Dry::Types()
     end
 
     def initialize(errors: {})
