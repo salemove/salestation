@@ -31,6 +31,9 @@ module Salestation
         App::Errors::UnsupportedMediaType => -> (error) {
           Responses::UnsupportedMediaType.new(message: error.message, debug_message: error.debug_message, base_error: error.base_error)
         },
+        App::Errors::BadRequest => -> (error) {
+          Responses::BadRequest.new(message: error.message, debug_message: error.debug_message, base_error: error.base_error)
+        },
         App::Errors::RequestEntityTooLarge => -> (error) {
           Responses::RequestEntityTooLarge.new(message: error.message, debug_message: error.debug_message, base_error: error.base_error)
         }
