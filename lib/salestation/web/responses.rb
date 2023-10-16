@@ -115,6 +115,7 @@ module Salestation
       Accepted = Success.with_code(202)
       NoContent = Success.with_code(204)
 
+      BadRequest = Error.with_code(400)
       Unauthorized = Error.with_code(401)
       Forbidden = Error.with_code(403)
       NotFound = Error.with_code(404)

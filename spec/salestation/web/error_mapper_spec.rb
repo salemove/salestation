@@ -94,6 +94,20 @@ describe Salestation::Web::ErrorMapper do
     end
   end
 
+  context 'when Errors::BadRequest' do
+    let(:error_mapper) { Salestation::Web::ErrorMapper.new }
+    let(:message) { 'invalid request message framing' }
+
+    it 'returns Responses::BadRequest' do
+      response = Salestation::App::Request.new(env: {}, input: {})
+        .to_failure(Salestation::App::Errors::BadRequest.new(message: message))
+        .map_err(&error_mapper.map)
+        .value
+
+      expect(response).to be_a(Salestation::Web::Responses::BadRequest)
+    end
+  end
+
   context 'when undefined error class' do
     let(:error_mapper) { Salestation::Web::ErrorMapper.new }
 
