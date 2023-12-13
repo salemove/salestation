@@ -6,7 +6,7 @@ Gem::Specification.new do |spec|
   spec.name          = "salestation"
   spec.version       = "5.3.2"
   spec.authors       = ["Glia TechMovers"]
-  spec.email         = ["techmovers@glia.com"]
+  spec.email         = ["open-source@glia.com"]
 
   spec.summary       = %q{}
   spec.description   = %q{}
