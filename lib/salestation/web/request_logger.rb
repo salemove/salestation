@@ -13,6 +13,8 @@ module Salestation
       HTTP_ACCEPT = 'HTTP_ACCEPT'
       HTTP_ORIGIN = 'HTTP_ORIGIN'
       SERVER_NAME = 'SERVER_NAME'
+      GLIA_ACCOUNT_ID = 'HTTP_GLIA_ACCOUNT_ID'
+      GLIA_USER_ID = 'HTTP_GLIA_USER_ID'
 
       def initialize(app, logger, log_response_body: false, level: :info)
         @app = app
@@ -47,18 +49,20 @@ module Salestation
 
       def response_log(env, status, headers, body, began_at)
         log = {
-          remote_addr:  env[REMOTE_ADDR],
-          method:       env[REQUEST_METHOD],
-          path:         env[REQUEST_URI],
-          query:        env[QUERY_STRING],
-          content_type: env[CONTENT_TYPE],
-          http_agent:   env[HTTP_USER_AGENT],
-          http_accept:  env[HTTP_ACCEPT],
-          http_origin:  env[HTTP_ORIGIN],
-          server_name:  env[SERVER_NAME],
-          status:       status,
-          duration:     duration(from: began_at),
-          headers:      headers
+          remote_addr:     env[REMOTE_ADDR],
+          method:          env[REQUEST_METHOD],
+          path:            env[REQUEST_URI],
+          query:           env[QUERY_STRING],
+          content_type:    env[CONTENT_TYPE],
+          http_agent:      env[HTTP_USER_AGENT],
+          http_accept:     env[HTTP_ACCEPT],
+          http_origin:     env[HTTP_ORIGIN],
+          server_name:     env[SERVER_NAME],
+          status:          status,
+          duration:        duration(from: began_at),
+          glia_account_id: env[GLIA_ACCOUNT_ID],
+          glia_user_id:    env[GLIA_USER_ID],
+          headers:         headers
         }
 
         if status >= 400

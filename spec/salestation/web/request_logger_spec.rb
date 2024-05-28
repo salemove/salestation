@@ -99,5 +99,18 @@ describe Salestation::Web::RequestLogger do
         middleware.call(status: 400, body: error)
       end
     end
+
+    it 'logs Glia-Account-Id and Glia-User-Id headers' do
+      middleware = described_class.new(web_app, logger)
+      account_id = 'account-id'
+      user_id = 'user-id'
+
+      expect(logger).to receive(:info).with(
+        'Processed request',
+        a_hash_including(glia_account_id: account_id, glia_user_id: user_id)
+      )
+
+      middleware.call(body: '{}', 'HTTP_GLIA_ACCOUNT_ID' => account_id, 'HTTP_GLIA_USER_ID' => user_id)
+    end
   end
 end
