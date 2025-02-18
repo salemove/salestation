@@ -112,5 +112,16 @@ describe Salestation::Web::RequestLogger do
 
       middleware.call(body: '{}', 'HTTP_GLIA_ACCOUNT_ID' => account_id, 'HTTP_GLIA_USER_ID' => user_id)
     end
+
+    it 'logs arbitrary extra fields set in the env' do
+      middleware = described_class.new(web_app, logger)
+
+      expect(logger).to receive(:info).with(
+        'Processed request',
+        a_hash_including(arbitrary_field: 'example_value')
+      )
+
+      middleware.call(body: '{}', 'salestation.request_logger.fields' => { arbitrary_field: 'example_value' })
+    end
   end
 end
