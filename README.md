@@ -167,6 +167,15 @@ class Webapp < Sinatra::Base
 end
 ```
 
+You can configure per-request fields by defining `salestation.request_logger.fields` in sinatra `env`:
+
+```ruby
+  def my_handler(env)
+    env['salestation.request_logger.fields'] = { foo: 'bar' }
+    # ...
+  end
+```
+
 ### Using StatsD
 
 Salestation provides a StatsD middleware which can be used record request

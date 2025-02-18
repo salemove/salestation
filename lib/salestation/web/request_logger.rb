@@ -3,6 +3,8 @@
 module Salestation
   class Web < Module
     class RequestLogger
+      EXTRA_FIELDS_ENV_KEY = 'salestation.request_logger.fields'
+
       DURATION_PRECISION = 6
       REMOTE_ADDR = 'REMOTE_ADDR'
       REQUEST_URI = 'REQUEST_URI'
@@ -71,7 +73,8 @@ module Salestation
           log[:body] = body.join
         end
 
-        log
+        extra_fields = env.fetch(EXTRA_FIELDS_ENV_KEY, {})
+        log.merge!(extra_fields)
       end
 
       def duration(from:)
