@@ -179,7 +179,7 @@ You can configure per-request fields by defining `salestation.request_logger.fie
 ### Using StatsD
 
 Salestation provides a StatsD middleware which can be used record request
-execution time. A `timing` call with elapsed seconds is made to the provided
+execution time. A `distribution` call with elapsed seconds is made to the provided
 StatsD instance with `path`, `method`, `status` and `status_class` tags.
 
 ```ruby
