@@ -20,7 +20,7 @@ describe Salestation::Web::StatsdMiddleware do
     it 'records status and status class' do
       middleware = described_class.new(web_app, statsd, metric: 'test.req')
 
-      expect(statsd).to receive(:timing)
+      expect(statsd).to receive(:distribution)
         .with(
           'test.req',
           instance_of(Float),
