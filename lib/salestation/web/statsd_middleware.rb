@@ -7,10 +7,12 @@ module Salestation
 
       DURATION_MILLISECOND_PRECISION = 3
 
-      def initialize(app, statsd, metric:)
+      def initialize(app, statsd, logger, metric:, tagged_params: {})
         @app = app
         @statsd = statsd
         @metric = metric
+        @tagged_params = tagged_params
+        @logger = logger
       end
 
       def call(env)
@@ -26,12 +28,37 @@ module Salestation
             'unknown-route'
           end
 
+        params = env['rack.request.form_hash']
+
+        if path != '/healthz'
+          @logger.error("Metric body:")
+          pp path
+          pp params
+        end
+
+        param_tags = @tagged_params.map do |tag, allowed_values|
+          val = if params.has_key?(tag)
+            if allowed_values.include?(params[tag])
+              params[tag]
+            else
+              'other'
+            end
+          else
+            'N/A'
+          end
+
+          "#{tag}:#{val}"
+        end
+
+        @logger.error("tags: #{param_tags}")
+        @logger.error("custom tags: #{env[EXTRA_TAGS_ENV_KEY]}")
+        
         tags = [
           "path:#{path}",
           "method:#{method}",
           "status:#{status}",
-          "status_class:#{status / 100}xx"
-        ] + env.fetch(EXTRA_TAGS_ENV_KEY, [])
+          "status_class:#{status / 100}xx",
+        ] + env.fetch(EXTRA_TAGS_ENV_KEY, []) + param_tags
 
         @statsd.distribution(@metric, duration_ms(from: start), tags: tags)
 
