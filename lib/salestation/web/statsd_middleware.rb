@@ -7,6 +7,9 @@ module Salestation
 
       DURATION_MILLISECOND_PRECISION = 3
 
+      HTTP_ORIGIN = 'HTTP_ORIGIN'
+      HTTP_REFERER = 'HTTP_REFERER'
+
       def initialize(app, statsd, metric:)
         @app = app
         @statsd = statsd
@@ -30,7 +33,8 @@ module Salestation
           "path:#{path}",
           "method:#{method}",
           "status:#{status}",
-          "status_class:#{status / 100}xx"
+          "status_class:#{status / 100}xx",
+          "origin:#{origin_tag(env)}"
         ] + env.fetch(EXTRA_TAGS_ENV_KEY, [])
 
         @statsd.distribution(@metric, duration_ms(from: start), tags: tags)
@@ -46,6 +50,26 @@ module Salestation
 
       def system_monotonic_time
         Process.clock_gettime(Process::CLOCK_MONOTONIC)
+      end
+
+      def origin_tag(env)
+        domain = extract_domain(env[HTTP_ORIGIN]) || extract_domain(env[HTTP_REFERER])
+
+        glia_domain?(domain) ? 'glia' : 'other'
+      end
+
+      def extract_domain(header_value)
+        return nil if header_value.nil? || header_value.empty?
+
+        URI.parse(header_value).host
+      rescue URI::InvalidURIError
+        nil
+      end
+
+      def glia_domain?(domain)
+        return false if domain.nil?
+
+        domain.match?(/\A(.+\.)?glia\.com\z/i)
       end
     end
   end
