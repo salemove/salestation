@@ -21,12 +21,12 @@ module Salestation
       end
 
       def clear_connections
-        if ActiveRecord::Base.respond_to?(:clear_active_connections!)
-          # For ActiveRecord 6.1 to 7.0
-          ActiveRecord::Base.clear_active_connections!
-        else
+        if ActiveRecord.version >= Gem::Version.new('7.1')
           # For ActiveRecord 7.1 and newer
           ActiveRecord::Base.connection_handler.clear_active_connections!
+        else
+          # For ActiveRecord 6.1 to 7.0
+          ActiveRecord::Base.clear_active_connections!
         end
       end
     end
