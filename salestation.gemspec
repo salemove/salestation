@@ -4,7 +4,7 @@ $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
 
 Gem::Specification.new do |spec|
   spec.name          = "salestation"
-  spec.version       = "6.1.0"
+  spec.version       = "6.1.1"
   spec.authors       = ["Glia TechMovers"]
   spec.email         = ["open-source@glia.com"]
 
