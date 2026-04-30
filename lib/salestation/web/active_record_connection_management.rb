@@ -22,8 +22,9 @@ module Salestation
 
       def clear_connections
         if ActiveRecord.version >= Gem::Version.new('7.1')
-          # For ActiveRecord 7.1 and newer
-          ActiveRecord::Base.connection_handler.clear_active_connections!
+          # For ActiveRecord 7.1 and newer. Pass :all to clear all roles,
+          # matching AR 7.2's future default.
+          ActiveRecord::Base.connection_handler.clear_active_connections!(:all)
         else
           # For ActiveRecord 6.1 to 7.0
           ActiveRecord::Base.clear_active_connections!
