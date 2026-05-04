@@ -5,6 +5,18 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## 6.2.0
+
+### Changed
+
+- `ActiveRecordConnectionManagement` now passes `:all` to
+  `clear_active_connections!` on AR 7.1+, silencing the deprecation
+  warning emitted on every HTTP request. **Behavior change**:
+  connections in non-writing roles (e.g. `:readonly`, `:analytics`)
+  are now also released at request end, matching AR 7.2's future
+  default and the middleware's intent of freeing all DB connections
+  per request.
+
 ## 6.1.0
 
 ### Fixed
