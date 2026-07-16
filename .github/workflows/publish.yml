@@ -4,18 +4,23 @@ on:
   push:
     branches:
       - master
+
+permissions: {}
+
 jobs:
   build:
+    permissions:
+      contents: write # rake release pushes tag to git
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
         with:
           fetch-depth: 2
-
+          persist-credentials: true # rake release pushes tag to git
 
       - name: Release Gem
-        uses: discourse/publish-rubygems-action@4bd305c65315cb691bad1e8de97a87aaf29a0a85
+        uses: discourse/publish-rubygems-action@4bd305c65315cb691bad1e8de97a87aaf29a0a85 # v3
         env:
           RUBYGEMS_API_KEY: ${{secrets.RUBYGEMS_API_KEY}}
           RELEASE_COMMAND: rake release

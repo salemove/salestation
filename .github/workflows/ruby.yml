@@ -9,8 +9,12 @@ on:
   pull_request:
     branches: [ master ]
 
+permissions: {}
+
 jobs:
   test:
+    permissions:
+      contents: read
 
     runs-on: ubuntu-latest
     strategy:
@@ -18,10 +22,11 @@ jobs:
         ruby-version: ['2.7', '3.0', '3.1', '3.2']
 
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+      with:
+        persist-credentials: false
     - name: Set up Ruby
-      # Automatically get bug fixes and new Ruby versions for ruby/setup-ruby
-      uses: ruby/setup-ruby@v1
+      uses: ruby/setup-ruby@003a5c4d8d6321bd302e38f6f0ec593f77f06600 # v1.319.0
       with:
         ruby-version: ${{ matrix.ruby-version }}
         bundler-cache: true # runs 'bundle install' and caches installed gems automatically
