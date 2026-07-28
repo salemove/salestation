@@ -102,8 +102,8 @@ describe Salestation::Web::RequestLogger do
 
     it 'logs Glia-Account-Id and Glia-User-Id headers' do
       middleware = described_class.new(web_app, logger)
-      account_id = 'account-id'
-      user_id = 'user-id'
+      account_id = SecureRandom.uuid
+      user_id = SecureRandom.uuid
 
       expect(logger).to receive(:info).with(
         'Processed request',
