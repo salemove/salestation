@@ -1,16 +1,3 @@
-# Gitleaks secret scanning for public repositories.
-#
-# Public repos cannot run the org-level "Gitleaks Secret Scanning ruleset"
-# workflow (its file lives in a private repo, and GitHub refuses to require
-# a workflow from a less visible repository), so they carry this copy.
-#
-# The `gitleaks-scan` job name is load-bearing: the branch ruleset managed
-# by GHOM (ghom-manifests) requires a check named `gitleaks-scan` posted by
-# GitHub Actions.
-#
-# Note: secrets are not available to workflows triggered by pull requests
-# from forks, so this check fails on external contributors' PRs (accepted
-# trade-off; a maintainer can re-push the branch to run it with the license).
 name: Gitleaks Secret Scanning
 on:
   push:
